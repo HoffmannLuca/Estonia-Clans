@@ -1,5 +1,6 @@
 package com.rust.estonia.discord.bot.clans;
 
+import com.rust.estonia.discord.bot.clans.listener.CommandListener;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.intent.Intent;
@@ -20,6 +21,9 @@ public class EstoniaClansApplication {
 	@Autowired
 	private Environment env;
 
+	@Autowired
+	private CommandListener commandListener;
+
 	@Bean
 	@ConfigurationProperties(value = "discord-api")
 	public DiscordApi discordApi(){
@@ -37,6 +41,8 @@ public class EstoniaClansApplication {
 						Intent.GUILD_INTEGRATIONS,
 						Intent.GUILD_INVITES
 				)
+
+				.addMessageCreateListener(commandListener)
 
 				.login()
 				.join();

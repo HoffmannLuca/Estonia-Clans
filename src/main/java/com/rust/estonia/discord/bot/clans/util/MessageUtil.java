@@ -5,11 +5,13 @@ import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.LowLevelComponent;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.embed.EmbedField;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.util.List;
 
 
+@Component
 public class MessageUtil {
     public void sendMessageAsEmbed(TextChannel channel, String title){
         sendMessageAsEmbedWithColorAndFields(channel, null, null, title, null, null, null, null);
@@ -115,7 +117,7 @@ public class MessageUtil {
 
     }
 
-    public MessageBuilder getMessageBuilder(String content, java.util.List<EmbedBuilder> embedBuilderList, List<LowLevelComponent> lowLevelComponentList){
+    public MessageBuilder getMessageBuilder(String content, List<EmbedBuilder> embedBuilderList, List<LowLevelComponent> lowLevelComponentList){
 
         return new MessageBuilder().setContent(content).setEmbeds((EmbedBuilder) embedBuilderList).addActionRow((LowLevelComponent) lowLevelComponentList);
     }
