@@ -1,6 +1,8 @@
 package com.rust.estonia.discord.bot.clans.listener;
 
 import com.rust.estonia.discord.bot.clans.command.type.ServerCommand;
+import com.rust.estonia.discord.bot.clans.data.model.Setup;
+import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.MessageUtil;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
@@ -18,10 +20,13 @@ import java.util.List;
 public class CommandListener implements MessageCreateListener {
 
     @Autowired
+    private List<ServerCommand> commandList;
+
+    @Autowired
     private MessageUtil messageUtil;
 
     @Autowired
-    private List<ServerCommand> commandList;
+    private SetupService setupService;
 
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
@@ -32,7 +37,8 @@ public class CommandListener implements MessageCreateListener {
 
         if (event.isServerMessage()) {
             Server server = event.getServer().get();
-            String prefix = "!";
+            Setup setup = setupService.getSetup(server);
+            String prefix = setup.getPrefix();
 
             if(messageContent.startsWith(prefix)) {
                 User user = event.getMessageAuthor().asUser().get();

@@ -28,7 +28,7 @@ public class MongoConfig {
 
     @Bean
     public MongoTemplate mongoTemplate() {
-        MongoTemplate mongoTemplate = new MongoTemplate(mongoClient(), "myMongoDB");
+        MongoTemplate mongoTemplate = new MongoTemplate(mongoClient(), "Estonia-Clans");
 
         return mongoTemplate;
 
