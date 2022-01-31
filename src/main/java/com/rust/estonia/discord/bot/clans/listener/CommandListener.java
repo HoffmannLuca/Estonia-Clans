@@ -1,7 +1,6 @@
 package com.rust.estonia.discord.bot.clans.listener;
 
 import com.rust.estonia.discord.bot.clans.command.type.ServerCommand;
-import com.rust.estonia.discord.bot.clans.data.model.Setup;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.MessageUtil;
 import org.javacord.api.entity.channel.TextChannel;
@@ -37,8 +36,7 @@ public class CommandListener implements MessageCreateListener {
 
         if (event.isServerMessage()) {
             Server server = event.getServer().get();
-            Setup setup = setupService.getSetup(server);
-            String prefix = setup.getPrefix();
+            String prefix = setupService.getServerPrefix(server);
 
             if(messageContent.startsWith(prefix)) {
                 User user = event.getMessageAuthor().asUser().get();

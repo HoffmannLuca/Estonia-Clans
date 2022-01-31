@@ -1,12 +1,10 @@
 package com.rust.estonia.discord.bot.clans.command.server;
 
 import com.rust.estonia.discord.bot.clans.command.type.ServerCommand;
-import com.rust.estonia.discord.bot.clans.data.model.Setup;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.MessageUtil;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,13 +66,20 @@ public class SetupCommand implements ServerCommand {
 
     private void setNewPrefix(Server server, TextChannel channel, String newPrefix){
 
-        Setup setup = setupService.getSetup(server);
+        String oldPrefix = setupService.getServerPrefix(server);
 
         if(newPrefix.length() == 1){
-            messageUtil.sendMessageAsEmbed(channel, "Setup", "Old prefix: " + setup.getPrefix());
-            setup.setPrefix(newPrefix);
-            setupService.updateSetup(setup);
-            messageUtil.sendMessageAsEmbed(channel, "Setup", "New prefix: " + setup.getPrefix());
+            if(setupService.setServerPrefix(server, newPrefix)){
+                messageUtil.sendMessageAsEmbed(channel, "Setup", "Old prefix: " + oldPrefix);
+                messageUtil.sendMessageAsEmbed(channel, "Setup", "New prefix: " + newPrefix);
+            } else {
+                messageUtil.sendMessageAsEmbedWithColor(
+                        channel,
+                        new Color(255,0,0),
+                        "Setup error",
+                        "Prefix could not be set"
+                );
+            }
         } else {
             messageUtil.sendMessageAsEmbedWithColor(
                     channel,
