@@ -57,46 +57,46 @@ public class MessageUtil {
 
     //With Fields
 
-    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedField> embedFields, String title){
+    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedFieldModel> embedFields, String title){
         sendMessageAsEmbedWithColorAndFields(channel, null, embedFields, title, null, null, null, null);
     }
 
-    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedField> embedFields, String title, String description){
+    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedFieldModel> embedFields, String title, String description){
         sendMessageAsEmbedWithColorAndFields(channel, null, embedFields, title, description, null, null, null);
     }
 
-    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedField> embedFields, String title, String description, String footer){
+    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedFieldModel> embedFields, String title, String description, String footer){
         sendMessageAsEmbedWithColorAndFields(channel, null, embedFields, title, description, footer, null, null);
     }
 
-    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedField> embedFields, String title, String description, String footer, String author){
+    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedFieldModel> embedFields, String title, String description, String footer, String author){
         sendMessageAsEmbedWithColorAndFields(channel,null, embedFields, title, description, footer, author, null);
     }
 
-    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedField> embedFields, String title, String description, String footer, String author, String thumbnailURL){
+    public void sendMessageAsEmbedWithFields(TextChannel channel, List<EmbedFieldModel> embedFields, String title, String description, String footer, String author, String thumbnailURL){
         sendMessageAsEmbedWithColorAndFields(channel,null, embedFields, title, description, footer, author, thumbnailURL);
     }
 
     //with Color and Fields
 
-    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedField> embedFields, String title){
+    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedFieldModel> embedFields, String title){
         sendMessageAsEmbedWithColorAndFields(channel, color, embedFields, title, null, null, null, null);
     }
 
-    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedField> embedFields, String title, String description){
+    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedFieldModel> embedFields, String title, String description){
         sendMessageAsEmbedWithColorAndFields(channel, color, embedFields, title, description, null, null, null);
     }
 
-    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedField> embedFields, String title, String description, String footer){
+    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedFieldModel> embedFields, String title, String description, String footer){
         sendMessageAsEmbedWithColorAndFields(channel, color, embedFields, title, description, footer, null, null);
     }
 
-    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedField> embedFields, String title, String description, String footer, String author){
+    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedFieldModel> embedFields, String title, String description, String footer, String author){
         sendMessageAsEmbedWithColorAndFields(channel,color, embedFields, title, description, footer, author, null);
     }
 
 
-    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedField> embedFields, String title, String description, String footer, String author, String thumbnailURL){
+    public void sendMessageAsEmbedWithColorAndFields(TextChannel channel, Color color, List<EmbedFieldModel> embedFields, String title, String description, String footer, String author, String thumbnailURL){
 
         EmbedBuilder embedBuilder =
                 new EmbedBuilder()

@@ -4,6 +4,7 @@ import com.rust.estonia.discord.bot.clans.data.model.Setup;
 import com.rust.estonia.discord.bot.clans.data.repository.SetupRepository;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.channel.VoiceChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class SetupService {
     @Autowired
     private SetupRepository repository;
 
-    private Setup getSetup(Server server){
+    public Setup getSetup(Server server){
 
         long serverId = server.getId();
         String serverName = server.getName();
@@ -90,6 +91,28 @@ public class SetupService {
             HashMap<String, Long> idMap = setup.getTextChannelIdMap();
             idMap.put(channelTag, channel.getId());
             setup.setTextChannelIdMap(idMap);
+            updateSetup(setup);
+            return true;
+        }
+        return false;
+    }
+
+    public VoiceChannel getServerVoiceChannelByChannelTag(Server server, String channelTag){
+
+        long id = getSetup(server).getVoiceChannelIdMap().get(channelTag);
+        if(server.getVoiceChannelById(id).isPresent()){
+            return server.getVoiceChannelById(id).get();
+        }
+        return null;
+    }
+
+    public boolean setServerVoiceChannelByChannelTag(Server server, VoiceChannel channel, String channelTag){
+
+        if(server.getVoiceChannelById(channel.getId()).isPresent()){
+            Setup setup = getSetup(server);
+            HashMap<String, Long> idMap = setup.getVoiceChannelIdMap();
+            idMap.put(channelTag, channel.getId());
+            setup.setVoiceChannelIdMap(idMap);
             updateSetup(setup);
             return true;
         }

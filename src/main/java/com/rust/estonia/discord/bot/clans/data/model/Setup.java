@@ -21,6 +21,8 @@ public class Setup {
 
     private HashMap<String, Long> textChannelIdMap;
 
+    private HashMap<String, Long> voiceChannelIdMap;
+
     private HashMap<String, Long> roleIdMap;
 
     public Setup(long serverId, String serverName) {
@@ -57,6 +59,10 @@ public class Setup {
     //TextChannelIdMap
     public HashMap<String, Long> getTextChannelIdMap() { return textChannelIdMap; }
     public void setTextChannelIdMap(HashMap<String, Long> textChannelIdMap) { this.textChannelIdMap = textChannelIdMap; }
+
+    //VoiceChannelIdMap
+    public HashMap<String, Long> getVoiceChannelIdMap() { return voiceChannelIdMap; }
+    public void setVoiceChannelIdMap(HashMap<String, Long> voiceChannelIdMap) { this.voiceChannelIdMap = voiceChannelIdMap; }
 
     //RoleIdMap
     public HashMap<String, Long> getRoleIdMap() { return roleIdMap; }
