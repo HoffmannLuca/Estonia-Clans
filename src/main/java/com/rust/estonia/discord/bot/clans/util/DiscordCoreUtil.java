@@ -3,6 +3,7 @@ package com.rust.estonia.discord.bot.clans.util;
 import org.javacord.api.entity.channel.*;
 import org.javacord.api.entity.permission.*;
 import org.javacord.api.entity.server.Server;
+import org.javacord.api.entity.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -232,42 +233,133 @@ public class DiscordCoreUtil {
     }
 
 
-//TODO - - GET - -
+// - - GET - -
 
 
-    //TODO GET - ChannelCategory
+    // GET - ChannelCategory
+    public ChannelCategory getCategory(Server server, long categoryId){
 
-    //TODO GET - TextChannel
+        if(server.getChannelCategoryById(categoryId).isPresent()){
+            return server.getChannelCategoryById(categoryId).get();
+        }
+        return null;
+    }
 
-    //TODO GET - VoiceChannel
+    // GET - TextChannel
+    public TextChannel getTextChannel(Server server, long channelId){
 
-    //TODO GET - Role
+        if(server.getTextChannelById(channelId).isPresent()){
+            return server.getTextChannelById(channelId).get();
+        }
+        return null;
+    }
 
-    //TODO GET - User
+    // GET - VoiceChannel
+    public VoiceChannel getVoiceChannel(Server server, long channelId){
+
+        if(server.getVoiceChannelById(channelId).isPresent()){
+            return server.getVoiceChannelById(channelId).get();
+        }
+        return null;
+    }
+
+    // GET - Role
+    public Role getRole(Server server, long roleId){
+
+        if(server.getRoleById(roleId).isPresent()){
+            return server.getRoleById(roleId).get();
+        }
+        return null;
+    }
+
+    // GET - User
+    public User getUser(Server server, long userId){
+
+        if(server.getMemberById(userId).isPresent()){
+            return server.getMemberById(userId).get();
+        }
+        return null;
+    }
 
 
-//TODO - - GET AS MENTION - -
+// - - GET AS MENTION - -
 
 
-    //TODO GET AS MENTION - TextChannel
+    // GET AS MENTION - TextChannel
+    public String getTextChannelAsMentionTag(Server server, long channelId){
 
-    //TODO GET AS MENTION - Role
+        if(server.getTextChannelById(channelId).isPresent()){
+            return server.getTextChannelById(channelId).get().getMentionTag();
+        }
+        return "";
+    }
 
-    //TODO GET AS MENTION - User
+    // GET AS MENTION - Role
+    public String getRoleAsMentionTag(Server server, long roleId){
+
+        if(server.getRoleById(roleId).isPresent()){
+            return server.getRoleById(roleId).get().getMentionTag();
+        }
+        return "";
+    }
+
+    // GET AS MENTION - User
+    public String getUserAsMentionTag(Server server, long userId){
+
+        if(server.getMemberById(userId).isPresent()){
+            return server.getMemberById(userId).get().getMentionTag();
+        }
+        return "";
+    }
 
 
-//TODO - - GET NAME - -
+// - - GET NAME - -
 
 
-    //TODO GET NAME - ChannelCategory
+    // GET NAME - ChannelCategory
+    public String getChannelCategoryName(Server server, long channelId){
 
-    //TODO GET NAME - TextChannel
+        if(server.getChannelCategoryById(channelId).isPresent()){
+            return server.getChannelCategoryById(channelId).get().getName();
+        }
+        return "";
+    }
 
-    //TODO GET NAME - VoiceChannel
+    // GET NAME - TextChannel
+    public String getTextChannelName(Server server, long channelId){
 
-    //TODO GET NAME - Role
+        if(server.getTextChannelById(channelId).isPresent()){
+            return server.getTextChannelById(channelId).get().getName();
+        }
+        return "";
+    }
 
-    //TODO GET NAME - User
+    // GET NAME - VoiceChannel
+    public String getVoiceChannelName(Server server, long channelId){
+
+        if(server.getVoiceChannelById(channelId).isPresent()){
+            return server.getVoiceChannelById(channelId).get().getName();
+        }
+        return "";
+    }
+
+    // GET NAME - Role
+    public String getRoleName(Server server, long roleId){
+
+        if(server.getRoleById(roleId).isPresent()){
+            return server.getRoleById(roleId).get().getName();
+        }
+        return "";
+    }
+
+    // GET NAME - User
+    public String getUserName(Server server, long userId){
+
+        if(server.getMemberById(userId).isPresent()){
+            return server.getMemberById(userId).get().getName();
+        }
+        return "";
+    }
 
 
 //TODO - - UPDATE - -
