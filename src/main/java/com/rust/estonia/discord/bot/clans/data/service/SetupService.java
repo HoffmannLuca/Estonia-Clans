@@ -18,7 +18,7 @@ public class SetupService {
     @Autowired
     private SetupRepository repository;
 
-    public Setup getSetup(Server server){
+    private Setup getSetup(Server server){
 
         long serverId = server.getId();
         String serverName = server.getName();
@@ -139,6 +139,50 @@ public class SetupService {
             return true;
         }
         return false;
+    }
+
+    public HashMap<String, Long> getServerRoleIdMap(Server server) {
+        return getSetup(server).getRoleIdMap();
+    }
+
+    public void setServerRoleIdMap(Server server, HashMap<String, Long> roleIdMap){
+
+        Setup setup = getSetup(server);
+        setup.setRoleIdMap(roleIdMap);
+        updateSetup(setup);
+    }
+
+    public HashMap<String, Long> getServerTextChannelIdMap(Server server) {
+        return getSetup(server).getTextChannelIdMap();
+    }
+
+    public void setServerTextChannelIdMap(Server server, HashMap<String, Long> textChannelIdMap){
+
+        Setup setup = getSetup(server);
+        setup.setTextChannelIdMap(textChannelIdMap);
+        updateSetup(setup);
+    }
+
+    public HashMap<String, Long> getServerVoiceChannelIdMap(Server server) {
+        return getSetup(server).getVoiceChannelIdMap();
+    }
+
+    public void setServerVoiceChannelIdMap(Server server, HashMap<String, Long> voiceChannelIdMap){
+
+        Setup setup = getSetup(server);
+        setup.setVoiceChannelIdMap(voiceChannelIdMap);
+        updateSetup(setup);
+    }
+
+    public HashMap<String, Long> getServerCategoryIdMap(Server server) {
+        return getSetup(server).getCategoryIdMap();
+    }
+
+    public void setServerCategoryIdMap(Server server, HashMap<String, Long> categoryIdMap){
+
+        Setup setup = getSetup(server);
+        setup.setCategoryIdMap(categoryIdMap);
+        updateSetup(setup);
     }
 
     private Setup updateSetup(Setup setup){

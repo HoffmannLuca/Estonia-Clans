@@ -29,6 +29,10 @@ public class Setup {
         this.serverId = serverId;
         this.serverName = serverName;
         this.prefix = "!";
+        this.categoryIdMap=new HashMap<>();
+        this.textChannelIdMap=new HashMap<>();
+        this.voiceChannelIdMap=new HashMap<>();
+        this.roleIdMap=new HashMap<>();
     }
 
     //ServerId

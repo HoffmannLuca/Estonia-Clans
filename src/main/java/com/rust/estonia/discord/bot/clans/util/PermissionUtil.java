@@ -3,6 +3,7 @@ package com.rust.estonia.discord.bot.clans.util;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.channel.VoiceChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -30,7 +31,10 @@ public class PermissionUtil {
 
     public final String ADMIN_COMMAND_CHANNEL = "admin-command-channel";
     public final String CLAN_COMMAND_CHANNEL = "clan-command-channel";
-    public final String[] channelTags = {ADMIN_COMMAND_CHANNEL, CLAN_COMMAND_CHANNEL};
+    public final String[] textChannelTags = {ADMIN_COMMAND_CHANNEL, CLAN_COMMAND_CHANNEL};
+
+    public final String TEST_CHANNEL = "test-vc";
+    public final String[] voiceChannelTags = {TEST_CHANNEL};
 
     public final String ADMIN_ROLE = "admin";
     public final String MODERATOR_ROLE = "moderator";
@@ -49,14 +53,25 @@ public class PermissionUtil {
         return false;
     }
 
-    private boolean isValidChannelTag(String channelTag){
+    private boolean isValidTextChannelTag(String channelTag){
 
-        for (String tag : channelTags) {
+        for (String tag : textChannelTags) {
             if (tag.equalsIgnoreCase(channelTag)) {
                 return true;
             }
         }
-        logger.error(channelTag+" is not a valid channel tag!");
+        logger.error(channelTag+" is not a valid text channel tag!");
+        return false;
+    }
+
+    private boolean isValidVoiceChannelTag(String channelTag){
+
+        for (String tag : voiceChannelTags) {
+            if (tag.equalsIgnoreCase(channelTag)) {
+                return true;
+            }
+        }
+        logger.error(channelTag+" is not a valid voice channel tag!");
         return false;
     }
 
@@ -71,16 +86,16 @@ public class PermissionUtil {
         return false;
     }
 
-    public boolean isCorrectChannel(Server server, TextChannel channel, String channelTag){
+    public boolean isCorrectChannel(Server server, TextChannel channel, User user, String channelTag){
 
-        return isCorrectChannel(server, channel, channelTag, false);
+        return isCorrectChannel(server, channel, user, channelTag, false);
     }
-    public boolean isCorrectChannel(Server server, TextChannel channel, String channelTag, boolean sendErrorMessage){
+    public boolean isCorrectChannel(Server server, TextChannel channel, User user, String channelTag, boolean sendErrorMessage){
 
-        if(!setupService.arePermissionsActive(server)){
+        if(server.isAdmin(user) || server.isOwner(user)){
             return true;
         }
-        if(isValidChannelTag(channelTag)){
+        if(isValidTextChannelTag(channelTag)){
             TextChannel correctChannel = setupService.getServerTextChannelByChannelTag(server, channelTag);
             if(correctChannel != null){
                 if(correctChannel.getId() == channel.getId()){
@@ -102,7 +117,7 @@ public class PermissionUtil {
 
     public boolean userHasRole(Server server, TextChannel channel, User user, String roleTag, boolean sendErrorMessage){
 
-        if(!setupService.arePermissionsActive(server)){
+        if(server.isAdmin(user) || server.isOwner(user)){
             return true;
         }
         if(isValidRoleTag(roleTag)){
@@ -120,31 +135,36 @@ public class PermissionUtil {
         return false;
     }
 
-    public void assignCategoryToServerCategoryTag(Server server, ChannelCategory category, String categoryTag){
+    public boolean assignCategoryToServerCategoryTag(Server server, ChannelCategory category, String categoryTag){
 
         if(isValidCategoryTag(categoryTag)){
-            if(!setupService.setServerCategoryByCategoryTag(server, category, categoryTag)){
-                logger.error("no such category available in this server");
-            }
+            return setupService.setServerCategoryByCategoryTag(server, category, categoryTag);
         }
+        return false;
     }
 
-    public void assignChannelToServerChannelTag(Server server, TextChannel channel, String channelTag){
+    public boolean assignTextChannelToServerChannelTag(Server server, TextChannel channel, String channelTag){
 
-        if(isValidChannelTag(channelTag)){
-            if(!setupService.setServerTextChannelByChannelTag(server, channel, channelTag)){
-                logger.error("no such text channel available in this server");
-            }
+        if(isValidTextChannelTag(channelTag)){
+            return setupService.setServerTextChannelByChannelTag(server, channel, channelTag);
         }
+        return false;
     }
 
-    public void assignRoleToServerRoleTag(Server server, Role role, String roleTag){
+    public boolean assignVoiceChannelToServerChannelTag(Server server, VoiceChannel channel, String channelTag){
+
+        if(isValidVoiceChannelTag(channelTag)){
+            return setupService.setServerVoiceChannelByChannelTag(server, channel, channelTag);
+        }
+        return false;
+    }
+
+    public boolean assignRoleToServerRoleTag(Server server, Role role, String roleTag){
 
         if(isValidRoleTag(roleTag)){
-            if(!setupService.setServerRoleByRoleTag(server, role, roleTag)){
-                logger.error("no such role available in this server");
-            }
+            return setupService.setServerRoleByRoleTag(server, role, roleTag);
         }
+        return false;
     }
 
     //Errors

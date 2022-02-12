@@ -322,7 +322,7 @@ public class DiscordCoreUtil {
         if(server.getChannelCategoryById(channelId).isPresent()){
             return server.getChannelCategoryById(channelId).get().getName();
         }
-        return "";
+        return "(no-category)";
     }
 
     // GET NAME - TextChannel
@@ -331,7 +331,7 @@ public class DiscordCoreUtil {
         if(server.getTextChannelById(channelId).isPresent()){
             return server.getTextChannelById(channelId).get().getName();
         }
-        return "";
+        return "(no-text-channel)";
     }
 
     // GET NAME - VoiceChannel
@@ -340,7 +340,7 @@ public class DiscordCoreUtil {
         if(server.getVoiceChannelById(channelId).isPresent()){
             return server.getVoiceChannelById(channelId).get().getName();
         }
-        return "";
+        return "(no-voice-channel)";
     }
 
     // GET NAME - Role
@@ -349,7 +349,7 @@ public class DiscordCoreUtil {
         if(server.getRoleById(roleId).isPresent()){
             return server.getRoleById(roleId).get().getName();
         }
-        return "";
+        return "(no-role)";
     }
 
     // GET NAME - User
@@ -358,7 +358,7 @@ public class DiscordCoreUtil {
         if(server.getMemberById(userId).isPresent()){
             return server.getMemberById(userId).get().getName();
         }
-        return "";
+        return "(no-user)";
     }
 
 
@@ -384,4 +384,20 @@ public class DiscordCoreUtil {
     //TODO DELETE - VoiceChannel
 
     //TODO DELETE - Role
+
+// - - Util - -
+
+
+    public long getIdFromMentionedTag(String mentionedTag){
+
+        if(mentionedTag.length()== 22){
+            String test = mentionedTag.substring(3,21);
+            return Long.parseLong(test);
+        }
+        if(mentionedTag.length()== 21){
+            String test = mentionedTag.substring(2,20);
+            return Long.parseLong(test);
+        }
+        return 0;
+    }
 }

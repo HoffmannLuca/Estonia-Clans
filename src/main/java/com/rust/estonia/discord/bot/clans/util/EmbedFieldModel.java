@@ -18,6 +18,20 @@ public class EmbedFieldModel implements EditableEmbedField {
     }
 
     @Override
+    public String toString() {
+        return String.format(
+                "EmbedField[\n" +
+                        "\tname=%s, \n" +
+                        "\tvalue='%s', \n" +
+                        "\tinline='%s', \n" +
+                        "]\n",
+                name,
+                value,
+                inline
+        );
+    }
+
+    @Override
     public void setName(String name) {
         this.name = name;
     }
