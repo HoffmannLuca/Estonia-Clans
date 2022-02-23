@@ -42,22 +42,33 @@ public class SetupService {
 
     public String getServerPrefix(Server server){
 
-        return getSetup(server).getPrefix();
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            return setup.getPrefix();
+        }
+        return "!";
     }
 
     public boolean setServerPrefix(Server server, String newPrefix){
 
         Setup setup = getSetup(server);
-        setup.setPrefix(newPrefix);
-        updateSetup(setup);
+        if(setup != null) {
+            setup.setPrefix(newPrefix);
+            updateSetup(setup);
+        }
         return true;
     }
 
     public ChannelCategory getServerCategoryByCategoryTag(Server server, String categoryTag){
 
-        long id = getSetup(server).getCategoryIdMap().get(categoryTag);
-        if(server.getChannelCategoryById(id).isPresent()){
-            return server.getChannelCategoryById(id).get();
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            if(setup.getCategoryIdMap().containsKey(categoryTag)) {
+                long id = setup.getCategoryIdMap().get(categoryTag);
+                if (server.getChannelCategoryById(id).isPresent()) {
+                    return server.getChannelCategoryById(id).get();
+                }
+            }
         }
         return null;
     }
@@ -66,20 +77,27 @@ public class SetupService {
 
         if(server.getChannelCategoryById(category.getId()).isPresent()){
             Setup setup = getSetup(server);
-            HashMap<String, Long> idMap = setup.getCategoryIdMap();
-            idMap.put(categoryTag, category.getId());
-            setup.setCategoryIdMap(idMap);
-            updateSetup(setup);
-            return true;
+            if(setup != null) {
+                HashMap<String, Long> idMap = setup.getCategoryIdMap();
+                idMap.put(categoryTag, category.getId());
+                setup.setCategoryIdMap(idMap);
+                updateSetup(setup);
+                return true;
+            }
         }
         return false;
     }
 
     public TextChannel getServerTextChannelByChannelTag(Server server, String channelTag){
 
-        long id = getSetup(server).getTextChannelIdMap().get(channelTag);
-        if(server.getTextChannelById(id).isPresent()){
-            return server.getTextChannelById(id).get();
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            if(setup.getTextChannelIdMap().containsKey(channelTag)) {
+                long id = setup.getTextChannelIdMap().get(channelTag);
+                if (server.getTextChannelById(id).isPresent()) {
+                    return server.getTextChannelById(id).get();
+                }
+            }
         }
         return null;
     }
@@ -88,20 +106,27 @@ public class SetupService {
 
         if(server.getTextChannelById(channel.getId()).isPresent()){
             Setup setup = getSetup(server);
-            HashMap<String, Long> idMap = setup.getTextChannelIdMap();
-            idMap.put(channelTag, channel.getId());
-            setup.setTextChannelIdMap(idMap);
-            updateSetup(setup);
-            return true;
+            if(setup != null) {
+                HashMap<String, Long> idMap = setup.getTextChannelIdMap();
+                idMap.put(channelTag, channel.getId());
+                setup.setTextChannelIdMap(idMap);
+                updateSetup(setup);
+                return true;
+            }
         }
         return false;
     }
 
     public VoiceChannel getServerVoiceChannelByChannelTag(Server server, String channelTag){
 
-        long id = getSetup(server).getVoiceChannelIdMap().get(channelTag);
-        if(server.getVoiceChannelById(id).isPresent()){
-            return server.getVoiceChannelById(id).get();
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            if(setup.getVoiceChannelIdMap().containsKey(channelTag)) {
+                long id = setup.getVoiceChannelIdMap().get(channelTag);
+                if (server.getVoiceChannelById(id).isPresent()) {
+                    return server.getVoiceChannelById(id).get();
+                }
+            }
         }
         return null;
     }
@@ -110,20 +135,27 @@ public class SetupService {
 
         if(server.getVoiceChannelById(channel.getId()).isPresent()){
             Setup setup = getSetup(server);
-            HashMap<String, Long> idMap = setup.getVoiceChannelIdMap();
-            idMap.put(channelTag, channel.getId());
-            setup.setVoiceChannelIdMap(idMap);
-            updateSetup(setup);
-            return true;
+            if(setup != null) {
+                HashMap<String, Long> idMap = setup.getVoiceChannelIdMap();
+                idMap.put(channelTag, channel.getId());
+                setup.setVoiceChannelIdMap(idMap);
+                updateSetup(setup);
+                return true;
+            }
         }
         return false;
     }
 
     public Role getServerRoleByRoleTag(Server server, String roleTag){
 
-        long id = getSetup(server).getRoleIdMap().get(roleTag);
-        if(server.getRoleById(id).isPresent()){
-            return server.getRoleById(id).get();
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            if(setup.getRoleIdMap().containsKey(roleTag)) {
+                long id = setup.getRoleIdMap().get(roleTag);
+                if (server.getRoleById(id).isPresent()) {
+                    return server.getRoleById(id).get();
+                }
+            }
         }
         return null;
     }
@@ -132,57 +164,87 @@ public class SetupService {
 
         if(server.getRoleById(role.getId()).isPresent()){
             Setup setup = getSetup(server);
-            HashMap<String, Long> idMap = setup.getRoleIdMap();
-            idMap.put(roleTag, role.getId());
-            setup.setRoleIdMap(idMap);
-            updateSetup(setup);
-            return true;
+            if(setup != null) {
+                HashMap<String, Long> idMap = setup.getRoleIdMap();
+                idMap.put(roleTag, role.getId());
+                setup.setRoleIdMap(idMap);
+                updateSetup(setup);
+                return true;
+            }
         }
         return false;
     }
 
     public HashMap<String, Long> getServerRoleIdMap(Server server) {
-        return getSetup(server).getRoleIdMap();
+
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            return setup.getRoleIdMap();
+        }
+        return null;
     }
 
     public void setServerRoleIdMap(Server server, HashMap<String, Long> roleIdMap){
 
         Setup setup = getSetup(server);
-        setup.setRoleIdMap(roleIdMap);
-        updateSetup(setup);
+        if(setup != null) {
+            setup.setRoleIdMap(roleIdMap);
+            updateSetup(setup);
+        }
     }
 
     public HashMap<String, Long> getServerTextChannelIdMap(Server server) {
-        return getSetup(server).getTextChannelIdMap();
+
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            return setup.getTextChannelIdMap();
+        }
+        return null;
     }
 
     public void setServerTextChannelIdMap(Server server, HashMap<String, Long> textChannelIdMap){
 
         Setup setup = getSetup(server);
-        setup.setTextChannelIdMap(textChannelIdMap);
-        updateSetup(setup);
+        if(setup != null) {
+            setup.setTextChannelIdMap(textChannelIdMap);
+            updateSetup(setup);
+        }
     }
 
     public HashMap<String, Long> getServerVoiceChannelIdMap(Server server) {
-        return getSetup(server).getVoiceChannelIdMap();
+
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            return setup.getVoiceChannelIdMap();
+        }
+        return null;
     }
 
     public void setServerVoiceChannelIdMap(Server server, HashMap<String, Long> voiceChannelIdMap){
 
         Setup setup = getSetup(server);
-        setup.setVoiceChannelIdMap(voiceChannelIdMap);
-        updateSetup(setup);
+        if(setup != null) {
+            setup.setVoiceChannelIdMap(voiceChannelIdMap);
+            updateSetup(setup);
+        }
     }
 
     public HashMap<String, Long> getServerCategoryIdMap(Server server) {
-        return getSetup(server).getCategoryIdMap();
+
+        Setup setup = getSetup(server);
+        if(setup != null) {
+            return setup.getCategoryIdMap();
+        }
+        return null;
     }
 
     public void setServerCategoryIdMap(Server server, HashMap<String, Long> categoryIdMap){
 
         Setup setup = getSetup(server);
-        setup.setCategoryIdMap(categoryIdMap);
-        updateSetup(setup);
+        if(setup != null) {
+            setup.setCategoryIdMap(categoryIdMap);
+            updateSetup(setup);
+        }
     }
 
     private Setup updateSetup(Setup setup){

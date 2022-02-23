@@ -92,7 +92,7 @@ public class PermissionUtil {
     }
     public boolean isCorrectChannel(Server server, TextChannel channel, User user, String channelTag, boolean sendErrorMessage){
 
-        if(server.isAdmin(user) || server.isOwner(user)){
+        if(channelTag.equalsIgnoreCase(ADMIN_COMMAND_CHANNEL) && (server.isAdmin(user) || server.isOwner(user))){
             return true;
         }
         if(isValidTextChannelTag(channelTag)){
@@ -110,6 +110,25 @@ public class PermissionUtil {
         return false;
     }
 
+    public boolean isCorrectChannel(Server server, TextChannel channel, User user, String[] channelTagArray){
+
+        return isCorrectChannel(server, channel, user, channelTagArray, false);
+    }
+    public boolean isCorrectChannel(Server server, TextChannel channel, User user, String[] channelTagArray, boolean sendErrorMessage){
+
+        boolean isCorrectChannel = false;
+        for (String channelTag : channelTagArray) {
+            if (isCorrectChannel(server, channel, user, channelTag)) {
+                isCorrectChannel = true;
+                break;
+            }
+        }
+        if(!isCorrectChannel && sendErrorMessage){
+            sendErrorMessageForNoPermission(channel);
+        }
+        return isCorrectChannel;
+    }
+
     public boolean userHasRole(Server server, TextChannel channel, User user, String roleTag){
 
         return userHasRole(server, channel, user, roleTag, false);
@@ -117,7 +136,7 @@ public class PermissionUtil {
 
     public boolean userHasRole(Server server, TextChannel channel, User user, String roleTag, boolean sendErrorMessage){
 
-        if(server.isAdmin(user) || server.isOwner(user)){
+        if(roleTag.equalsIgnoreCase(ADMIN_ROLE) && (server.isAdmin(user) || server.isOwner(user))){
             return true;
         }
         if(isValidRoleTag(roleTag)){
@@ -133,6 +152,26 @@ public class PermissionUtil {
             }
         }
         return false;
+    }
+
+    public boolean userHasRole(Server server, TextChannel channel, User user, String[] roleTagArray){
+
+        return userHasRole(server, channel, user, roleTagArray, false);
+    }
+
+    public boolean userHasRole(Server server, TextChannel channel, User user, String[] roleTagArray, boolean sendErrorMessage){
+
+        boolean hasPermission = false;
+        for (String roleTag : roleTagArray) {
+            if (userHasRole(server, channel, user, roleTag)) {
+                hasPermission = true;
+                break;
+            }
+        }
+        if(!hasPermission && sendErrorMessage){
+            sendErrorMessageForNoPermission(channel);
+        }
+        return hasPermission;
     }
 
     public boolean assignCategoryToServerCategoryTag(Server server, ChannelCategory category, String categoryTag){

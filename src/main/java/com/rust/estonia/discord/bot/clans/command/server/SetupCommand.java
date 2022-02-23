@@ -44,44 +44,45 @@ public class SetupCommand implements ServerCommand {
     @Override
     public void performCommand(Server server, TextChannel channel, User user, Message message, String[] commandArgs) {
 
-        if(permissionUtil.isCorrectChannel(server, channel, user, permissionUtil.ADMIN_COMMAND_CHANNEL, true)
-                && permissionUtil.userHasRole(server, channel, user, permissionUtil.ADMIN_ROLE, true)) {
+        if(permissionUtil.isCorrectChannel(server, channel, user, permissionUtil.ADMIN_COMMAND_CHANNEL, true)){
+            if(permissionUtil.userHasRole(server, channel, user, permissionUtil.ADMIN_ROLE, true)){
 
-            if (commandArgs.length > 1) {
-                switch (commandArgs[1]) {
+                if (commandArgs.length > 1) {
+                    switch (commandArgs[1]) {
 
-                    case "info":
-                        showInfo(server, channel);
-                        break;
-                    case "prefix":
-                        setNewPrefix(server, channel, commandArgs);
-                        break;
-                    case "role":
-                        setRole(server, channel, message, commandArgs);
-                        break;
-                    case "channel":
-                        setChannel(server, channel, message, commandArgs);
-                        break;
-                    case "category":
-                        setCategory(server, channel, commandArgs);
-                        break;
+                        case "info":
+                            showInfo(server, channel);
+                            break;
+                        case "prefix":
+                            setNewPrefix(server, channel, commandArgs);
+                            break;
+                        case "role":
+                            setRole(server, channel, message, commandArgs);
+                            break;
+                        case "channel":
+                            setChannel(server, channel, message, commandArgs);
+                            break;
+                        case "category":
+                            setCategory(server, channel, commandArgs);
+                            break;
 
-                    default:
-                        messageUtil.sendMessageAsEmbedWithColor(
-                                channel,
-                                new Color(255, 0, 0),
-                                "Setup error",
-                                "Setup option __" + commandArgs[1] + "__ not available, choose from the following setup options: __info__ / __prefix__ / __role__ / __channel__ / __category__"
-                        );
-                        break;
+                        default:
+                            messageUtil.sendMessageAsEmbedWithColor(
+                                    channel,
+                                    new Color(255, 0, 0),
+                                    "Setup error",
+                                    "Setup option __" + commandArgs[1] + "__ not available, choose from the following setup options: __info__ / __prefix__ / __role__ / __channel__ / __category__"
+                            );
+                            break;
+                    }
+                } else {
+                    messageUtil.sendMessageAsEmbedWithColor(
+                            channel,
+                            new Color(255, 0, 0),
+                            "Setup error",
+                            "No setup option selected, choose from the following setup options: __info__ / __prefix__ / __role__ / __channel__ / __category__"
+                    );
                 }
-            } else {
-                messageUtil.sendMessageAsEmbedWithColor(
-                        channel,
-                        new Color(255, 0, 0),
-                        "Setup error",
-                        "No setup option selected, choose from the following setup options: __info__ / __prefix__ / __role__ / __channel__ / __category__"
-                );
             }
         }
     }
@@ -91,6 +92,7 @@ public class SetupCommand implements ServerCommand {
         List<EmbedFieldModel> embedFieldList = new ArrayList<>();
         embedFieldList.add(new EmbedFieldModel("General Settings", "-----------------------------------", false));
         embedFieldList.add(new EmbedFieldModel("Server Prefix ", setupService.getServerPrefix(server), true));
+
         HashMap<String, Long> roleIdMap = setupService.getServerRoleIdMap(server);
         if (roleIdMap.size() != 0) {
             embedFieldList.add(new EmbedFieldModel("Role Settings", "-----------------------------------", false));
