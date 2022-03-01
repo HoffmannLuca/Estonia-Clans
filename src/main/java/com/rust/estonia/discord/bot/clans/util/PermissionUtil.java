@@ -31,7 +31,8 @@ public class PermissionUtil {
 
     public final String ADMIN_COMMAND_CHANNEL = "admin-command-channel";
     public final String CLAN_COMMAND_CHANNEL = "clan-command-channel";
-    public final String[] textChannelTags = {ADMIN_COMMAND_CHANNEL, CLAN_COMMAND_CHANNEL};
+    public final String CLAN_LOG_CHANNEL = "clan-log-channel";
+    public final String[] textChannelTags = {ADMIN_COMMAND_CHANNEL, CLAN_COMMAND_CHANNEL, CLAN_LOG_CHANNEL};
 
     public final String TEST_CHANNEL = "test-vc";
     public final String[] voiceChannelTags = {TEST_CHANNEL};

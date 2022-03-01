@@ -54,7 +54,7 @@ public class DiscordCoreUtil {
 
     public Permissions getPermissions(PermissionType[] permissionTypes){
 
-        PermissionsBuilder permissionsBuilder = new PermissionsBuilder().setAllUnset();
+        PermissionsBuilder permissionsBuilder = new PermissionsBuilder().setAllDenied();
 
         for (PermissionType permissionType : permissionTypes) {
             permissionsBuilder.setAllowed(permissionType);
@@ -391,12 +391,12 @@ public class DiscordCoreUtil {
     public long getIdFromMentionedTag(String mentionedTag){
 
         if(mentionedTag.length()== 22){
-            String test = mentionedTag.substring(3,21);
-            return Long.parseLong(test);
+            String idString = mentionedTag.substring(3,21);
+            return Long.parseLong(idString);
         }
         if(mentionedTag.length()== 21){
-            String test = mentionedTag.substring(2,20);
-            return Long.parseLong(test);
+            String idString = mentionedTag.substring(2,20);
+            return Long.parseLong(idString);
         }
         return 0;
     }
