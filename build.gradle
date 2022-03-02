@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.javacord:javacord:3.3.2'
+	implementation 'org.javacord:javacord:3.4.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
