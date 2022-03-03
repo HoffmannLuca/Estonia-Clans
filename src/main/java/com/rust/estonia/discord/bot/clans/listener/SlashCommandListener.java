@@ -36,9 +36,9 @@ public class SlashCommandListener implements SlashCommandCreateListener {
                 SlashCommandInteractionOption secondOption = null;
                 List<SlashCommandInteractionOption> commandArguments = interaction.getArguments();
 
-                if(interaction.getOptions().get(0).isSubcommandOrGroup()){
+                if(!interaction.getOptions().isEmpty()){
                     firstOption = interaction.getOptions().get(0);
-                    if(firstOption.getOptions().get(0).isSubcommandOrGroup()){
+                    if(!firstOption.getOptions().isEmpty()){
                         secondOption = interaction.getOptions().get(0);
                     }
                 }
