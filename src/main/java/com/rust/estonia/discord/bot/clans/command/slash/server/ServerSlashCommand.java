@@ -16,7 +16,7 @@ public interface ServerSlashCommand {
     SlashCommandBuilder getCommandBuilder();
 
     void performCommand(SlashCommandInteraction interaction,
-                        SlashCommandInteractionOption firstOption, SlashCommandInteractionOption secondOption, List<SlashCommandInteractionOption> commandArguments,
+                        String firstOption, String secondOption, List<SlashCommandInteractionOption> commandArguments,
                         User user, TextChannel channel, Server server);
 
     default void deactivateCommand(Server server) {

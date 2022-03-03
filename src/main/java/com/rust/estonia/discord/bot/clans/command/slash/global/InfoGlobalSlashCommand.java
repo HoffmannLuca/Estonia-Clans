@@ -28,7 +28,7 @@ public class InfoGlobalSlashCommand implements GlobalSlashCommand {
     }
 
     @Override
-    public void performCommand(SlashCommandInteraction interaction, SlashCommandInteractionOption firstOption, SlashCommandInteractionOption secondOption, List<SlashCommandInteractionOption> commandArguments,
+    public void performCommand(SlashCommandInteraction interaction, String firstOption, String secondOption, List<SlashCommandInteractionOption> commandArguments,
                                User user, TextChannel channel) {
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
@@ -36,8 +36,8 @@ public class InfoGlobalSlashCommand implements GlobalSlashCommand {
                 .setTitle("__Info__")
                 .setColor(Color.BLUE)
                 .addField("Bot Info", "Display information about Bot features")
-                .addField("Clan Info", "Display information about clan features")
-                .addField("Event Info", "Display information about clan features");
+                .addField("Clan Info", "Display information about Clan features")
+                .addField("Event Info", "Display information about Event features");
 
         interaction.createImmediateResponder()
                 .setFlags(InteractionCallbackDataFlag.EPHEMERAL)

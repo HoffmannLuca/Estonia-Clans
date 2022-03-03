@@ -1,9 +1,7 @@
 package com.rust.estonia.discord.bot.clans.command.slash.global;
 
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandBuilder;
@@ -19,7 +17,7 @@ public interface GlobalSlashCommand {
     SlashCommandBuilder getCommandBuilder();
 
     void performCommand(SlashCommandInteraction interaction,
-                        SlashCommandInteractionOption firstOption, SlashCommandInteractionOption secondOption, List<SlashCommandInteractionOption> commandArguments,
+                        String firstOption, String secondOption, List<SlashCommandInteractionOption> commandArguments,
                         User user, TextChannel channel);
 
     default void deactivateCommand(DiscordApi api) {

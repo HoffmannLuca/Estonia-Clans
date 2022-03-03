@@ -32,14 +32,14 @@ public class SlashCommandListener implements SlashCommandCreateListener {
 
             if (interaction.getChannel().isPresent()) {
 
-                SlashCommandInteractionOption firstOption = null;
-                SlashCommandInteractionOption secondOption = null;
+                String firstOption = "";
+                String secondOption = "";
                 List<SlashCommandInteractionOption> commandArguments = interaction.getArguments();
 
                 if(!interaction.getOptions().isEmpty()){
-                    firstOption = interaction.getOptions().get(0);
-                    if(!firstOption.getOptions().isEmpty()){
-                        secondOption = interaction.getOptions().get(0);
+                    firstOption = interaction.getOptions().get(0).getName();
+                    if(!interaction.getOptions().get(0).getOptions().isEmpty()){
+                        secondOption = interaction.getOptions().get(0).getOptions().get(0).getName();
                     }
                 }
 
@@ -82,7 +82,7 @@ public class SlashCommandListener implements SlashCommandCreateListener {
     }
 
     private boolean tryToPerformGlobalCommand(SlashCommandInteraction interaction,
-                                              String commandName, SlashCommandInteractionOption firstOption, SlashCommandInteractionOption secondOption, List<SlashCommandInteractionOption> commandArguments,
+                                              String commandName, String firstOption, String secondOption, List<SlashCommandInteractionOption> commandArguments,
                                               User user, TextChannel channel){
 
         for(GlobalSlashCommand commandClass: globalSlashCommands){
@@ -95,7 +95,7 @@ public class SlashCommandListener implements SlashCommandCreateListener {
     }
 
     private boolean tryToPerformServerCommand(SlashCommandInteraction interaction,
-                                              String commandName, SlashCommandInteractionOption firstOption, SlashCommandInteractionOption secondOption, List<SlashCommandInteractionOption> commandArguments,
+                                              String commandName, String firstOption, String secondOption, List<SlashCommandInteractionOption> commandArguments,
                                               Server server, User user, TextChannel channel){
 
         for(ServerSlashCommand commandClass: serverSlashCommands){
