@@ -1,6 +1,5 @@
 package com.rust.estonia.discord.bot.clans.command.server;
 
-import com.rust.estonia.discord.bot.clans.command.type.ServerCommand;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
 import com.rust.estonia.discord.bot.clans.util.EmbedFieldModel;

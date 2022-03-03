@@ -1,4 +1,4 @@
-package com.rust.estonia.discord.bot.clans.command.type;
+package com.rust.estonia.discord.bot.clans.command.server;
 
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
