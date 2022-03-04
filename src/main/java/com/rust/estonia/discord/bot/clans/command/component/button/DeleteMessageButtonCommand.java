@@ -1,6 +1,6 @@
 package com.rust.estonia.discord.bot.clans.command.component.button;
 
-import com.rust.estonia.discord.bot.clans.command.constant.ButtonTag;
+import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.ButtonInteraction;

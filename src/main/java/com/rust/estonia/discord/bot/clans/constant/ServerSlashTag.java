@@ -1,4 +1,4 @@
-package com.rust.estonia.discord.bot.clans.command.constant;
+package com.rust.estonia.discord.bot.clans.constant;
 
 public class ServerSlashTag {
 

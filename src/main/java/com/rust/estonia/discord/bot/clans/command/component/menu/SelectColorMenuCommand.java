@@ -1,6 +1,6 @@
 package com.rust.estonia.discord.bot.clans.command.component.menu;
 
-import com.rust.estonia.discord.bot.clans.command.constant.MenuTag;
+import com.rust.estonia.discord.bot.clans.constant.MenuTag;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SelectMenuInteraction;

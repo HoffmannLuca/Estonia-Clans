@@ -1,6 +1,6 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server;
 
-import com.rust.estonia.discord.bot.clans.command.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
 import org.javacord.api.entity.channel.Channel;
