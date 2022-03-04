@@ -7,5 +7,5 @@ public class MenuTag {
         throw new IllegalStateException();
     }
 
-    public static final String SELECT_COLOR = "select_color";
+    public static final String SELECT_COLOR = "select-color";
 }

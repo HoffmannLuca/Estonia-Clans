@@ -7,5 +7,5 @@ public class ButtonTag {
         throw new IllegalStateException();
     }
 
-    public static final String DELETE_MESSAGE = "delete_message";
+    public static final String DELETE_MESSAGE = "delete-message";
 }
