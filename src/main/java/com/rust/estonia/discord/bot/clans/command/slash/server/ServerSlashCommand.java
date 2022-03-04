@@ -19,15 +19,4 @@ public interface ServerSlashCommand {
                         String firstOption, String secondOption, List<SlashCommandInteractionOption> commandArguments,
                         User user, TextChannel channel, Server server);
 
-    default void deactivateCommand(Server server) {
-
-        server.getSlashCommands().thenAccept(slashCommands ->
-                slashCommands.stream().filter(slashCommand ->
-                        slashCommand.getName().equals(getName())
-                ).forEach(slashCommand ->
-                        slashCommand.deleteForServer(server)
-                )
-        );
-    }
-
 }

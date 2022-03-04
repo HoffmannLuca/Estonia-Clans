@@ -1,6 +1,6 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server;
 
-import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
 import org.javacord.api.entity.channel.Channel;
@@ -38,29 +38,6 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
     private final String CHANNEL_SECOND_OPTION_TEXT = "text";
     private final String CHANNEL_SECOND_OPTION_VOICE = "voice";
 
-    //Argument Tags
-    private final String ADMIN_ROLE = "admin";
-    private final String MODERATOR_ROLE = "moderator";
-    private final String CLAN_LEADER_ROLE = "clan_leader";
-    private final String CLAN_OFFICER_ROLE = "clan_officer";
-    private final String[] roleTags = {ADMIN_ROLE, MODERATOR_ROLE, CLAN_LEADER_ROLE, CLAN_OFFICER_ROLE};
-
-
-    private final String ADMIN_COMMAND_CHANNEL = "admin_command_channel";
-    private final String CLAN_COMMAND_CHANNEL = "clan_command_channel";
-    private final String CLAN_LOG_CHANNEL = "clan_log_channel";
-    private final String[] textChannelTags = {ADMIN_COMMAND_CHANNEL, CLAN_COMMAND_CHANNEL, CLAN_LOG_CHANNEL};
-
-    private final String TEST_CHANNEL = "test_vc";
-    private final String[] voiceChannelTags = {TEST_CHANNEL};
-
-    private final String CLAN_CATEGORY = "clan_category";
-    private final String[] categoryTags = {CLAN_CATEGORY};
-
-
-
-
-
     @Override
     public String getName() {
         return ServerSlashTag.SETUP_COMMAND;
@@ -74,16 +51,16 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         List<SlashCommandOptionChoice> voiceChannelOptions = new ArrayList<>();
         List<SlashCommandOptionChoice> categoryOptions = new ArrayList<>();
 
-        for(String option : roleTags){
+        for(String option : RoleTag.roleTags){
             roleOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
         }
-        for(String option : textChannelTags){
+        for(String option : TextChannelTag.textChannelTags){
             textChannelOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
         }
-        for(String option : voiceChannelTags){
+        for(String option : VoiceChannelTag.voiceChannelTags){
             voiceChannelOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
         }
-        for(String option : categoryTags){
+        for(String option : CategoryTag.categoryTags){
             categoryOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
         }
 
@@ -214,7 +191,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
             if(setupService.setServerRoleByRoleTag(server, role, roleTag)){
                 embedBuilder.setColor(Color.GREEN)
                         .setTitle("Setup success!")
-                        .setDescription("**"+role.getMentionTag()+"** was assigned to the role tag: __"+roleTag+"__");
+                        .setDescription("**"+role.getMentionTag()+"** was assigned to the role tag: **"+roleTag+"**");
             }
         }
 
@@ -254,7 +231,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                         if(setupService.setServerTextChannelByChannelTag(server, textChannel, channelTag)) {
                             embedBuilder.setColor(Color.GREEN)
                                     .setTitle("Setup success!")
-                                    .setDescription(textChannelName + " was assigned to the text channel tag: __" + channelTag + "__");
+                                    .setDescription(textChannelName + " was assigned to the text channel tag: **" + channelTag + "**");
                         }
                     } else {
                         embedBuilder.setColor(Color.RED)
@@ -270,7 +247,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                         if(setupService.setServerVoiceChannelByChannelTag(server, voiceChannel, channelTag)) {
                             embedBuilder.setColor(Color.GREEN)
                                     .setTitle("Setup success!")
-                                    .setDescription("**"+voiceChannelName + "** was assigned to the voice channel tag: __" + channelTag + "__");
+                                    .setDescription("**"+voiceChannelName + "** was assigned to the voice channel tag: **" + channelTag + "**");
                         }
                     } else {
                         embedBuilder.setColor(Color.RED)
@@ -314,7 +291,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                 if(setupService.setServerCategoryByCategoryTag(server, category, categoryTag)){
                     embedBuilder.setColor(Color.GREEN)
                             .setTitle("Setup success!")
-                            .setDescription("**"+category.getName()+"** was assigned to the category tag: __"+categoryTag+"__");
+                            .setDescription("**"+category.getName()+"** was assigned to the category tag: **"+categoryTag+"**");
                 }
             } else {
                 embedBuilder.setColor(Color.RED)
