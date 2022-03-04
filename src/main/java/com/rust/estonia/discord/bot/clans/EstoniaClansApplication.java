@@ -4,18 +4,13 @@ import com.rust.estonia.discord.bot.clans.command.slash.global.GlobalSlashComman
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
 import com.rust.estonia.discord.bot.clans.listener.BotServerJoinListener;
 import com.rust.estonia.discord.bot.clans.listener.CommandListener;
+import com.rust.estonia.discord.bot.clans.listener.ComponentListener;
 import com.rust.estonia.discord.bot.clans.listener.SlashCommandListener;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
-import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.intent.Intent;
-import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.server.Server;
-import org.javacord.api.entity.user.User;
-import org.javacord.api.interaction.ApplicationCommand;
-import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandBuilder;
-import org.javacord.api.interaction.SlashCommandInteraction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -47,6 +42,9 @@ public class EstoniaClansApplication {
 	private SlashCommandListener slashCommandListener;
 
 	@Autowired
+	private ComponentListener componentListener;
+
+	@Autowired
 	private List<GlobalSlashCommand> globalSlashCommands;
 
 	@Autowired
@@ -73,6 +71,7 @@ public class EstoniaClansApplication {
 				.addServerJoinListener(botServerJoinListener)
 				.addMessageCreateListener(commandListener)
 				.addSlashCommandCreateListener(slashCommandListener)
+				.addMessageComponentCreateListener(componentListener)
 
 				.login()
 				.join();

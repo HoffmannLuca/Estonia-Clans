@@ -16,6 +16,7 @@ import java.awt.*;
 
 
 @Component
+@Deprecated
 public class PermissionUtil {
 
     @Autowired
@@ -87,10 +88,12 @@ public class PermissionUtil {
         return false;
     }
 
+    @Deprecated
     public boolean isCorrectChannel(Server server, TextChannel channel, User user, String channelTag){
 
         return isCorrectChannel(server, channel, user, channelTag, false);
     }
+    @Deprecated
     public boolean isCorrectChannel(Server server, TextChannel channel, User user, String channelTag, boolean sendErrorMessage){
 
         if(channelTag.equalsIgnoreCase(ADMIN_COMMAND_CHANNEL) && (server.isAdmin(user) || server.isOwner(user))){
@@ -110,11 +113,12 @@ public class PermissionUtil {
         }
         return false;
     }
-
+    @Deprecated
     public boolean isCorrectChannel(Server server, TextChannel channel, User user, String[] channelTagArray){
 
         return isCorrectChannel(server, channel, user, channelTagArray, false);
     }
+    @Deprecated
     public boolean isCorrectChannel(Server server, TextChannel channel, User user, String[] channelTagArray, boolean sendErrorMessage){
 
         boolean isCorrectChannel = false;
@@ -129,12 +133,12 @@ public class PermissionUtil {
         }
         return isCorrectChannel;
     }
-
+    @Deprecated
     public boolean userHasRole(Server server, TextChannel channel, User user, String roleTag){
 
         return userHasRole(server, channel, user, roleTag, false);
     }
-
+    @Deprecated
     public boolean userHasRole(Server server, TextChannel channel, User user, String roleTag, boolean sendErrorMessage){
 
         if(roleTag.equalsIgnoreCase(ADMIN_ROLE) && (server.isAdmin(user) || server.isOwner(user))){
@@ -154,12 +158,12 @@ public class PermissionUtil {
         }
         return false;
     }
-
+    @Deprecated
     public boolean userHasRole(Server server, TextChannel channel, User user, String[] roleTagArray){
 
         return userHasRole(server, channel, user, roleTagArray, false);
     }
-
+    @Deprecated
     public boolean userHasRole(Server server, TextChannel channel, User user, String[] roleTagArray, boolean sendErrorMessage){
 
         boolean hasPermission = false;
@@ -174,7 +178,7 @@ public class PermissionUtil {
         }
         return hasPermission;
     }
-
+    @Deprecated
     public boolean assignCategoryToServerCategoryTag(Server server, ChannelCategory category, String categoryTag){
 
         if(isValidCategoryTag(categoryTag)){
@@ -182,7 +186,7 @@ public class PermissionUtil {
         }
         return false;
     }
-
+    @Deprecated
     public boolean assignTextChannelToServerChannelTag(Server server, TextChannel channel, String channelTag){
 
         if(isValidTextChannelTag(channelTag)){
@@ -190,7 +194,7 @@ public class PermissionUtil {
         }
         return false;
     }
-
+    @Deprecated
     public boolean assignVoiceChannelToServerChannelTag(Server server, VoiceChannel channel, String channelTag){
 
         if(isValidVoiceChannelTag(channelTag)){
@@ -198,7 +202,7 @@ public class PermissionUtil {
         }
         return false;
     }
-
+    @Deprecated
     public boolean assignRoleToServerRoleTag(Server server, Role role, String roleTag){
 
         if(isValidRoleTag(roleTag)){
@@ -208,7 +212,7 @@ public class PermissionUtil {
     }
 
     //Errors
-
+    @Deprecated
     private void sendErrorMessageForNoPermission(TextChannel channel){
         messageUtil.sendMessageAsEmbedWithColor(
                 channel,
@@ -217,7 +221,7 @@ public class PermissionUtil {
                 "You don't have permission to perform this command"
         );
     }
-
+    @Deprecated
     private void sendErrorMessageForNoRoleAssigned(TextChannel channel, String permissionRoleName){
         messageUtil.sendMessageAsEmbedWithColor(
                 channel,
@@ -226,7 +230,7 @@ public class PermissionUtil {
                 "No role has been setup for __" + permissionRoleName + "__ permissions"
         );
     }
-
+    @Deprecated
     private void sendErrorMessageForNoChannelAssigned(TextChannel channel, String permissionChannelName){
         messageUtil.sendMessageAsEmbedWithColor(
                 channel,
@@ -235,7 +239,7 @@ public class PermissionUtil {
                 "No channel has been setup for __" + permissionChannelName + "__ permissions"
         );
     }
-
+    @Deprecated
     private void sendErrorMessageForWrongChannel(TextChannel channel){
         messageUtil.sendMessageAsEmbedWithColor(
                 channel,

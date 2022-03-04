@@ -1,5 +1,6 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server;
 
+import com.rust.estonia.discord.bot.clans.command.constant.ServerSlashTag;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
 import org.javacord.api.entity.channel.Channel;
@@ -27,8 +28,6 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private DiscordCoreUtil discordCoreUtil;
-
-    private final String COMMAND_NAME= "setup";
 
     //Option Tags
     private final String FIRST_OPTION_INFO = "info";
@@ -64,7 +63,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
     @Override
     public String getName() {
-        return COMMAND_NAME;
+        return ServerSlashTag.SETUP_COMMAND;
     }
 
     @Override
@@ -88,7 +87,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
             categoryOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
         }
 
-        return SlashCommand.with(COMMAND_NAME, "A command dedicated to setting up the bot",
+        return SlashCommand.with(ServerSlashTag.SETUP_COMMAND, "A command dedicated to setting up the bot",
                 Arrays.asList(
                         SlashCommandOption.create(SlashCommandOptionType.SUB_COMMAND, FIRST_OPTION_INFO, "Show information about the bot"),
 

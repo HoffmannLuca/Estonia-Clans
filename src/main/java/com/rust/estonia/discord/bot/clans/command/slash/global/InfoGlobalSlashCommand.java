@@ -1,5 +1,6 @@
 package com.rust.estonia.discord.bot.clans.command.slash.global;
 
+import com.rust.estonia.discord.bot.clans.command.constant.GlobalSlashTag;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
@@ -15,16 +16,14 @@ import java.util.List;
 @Component
 public class InfoGlobalSlashCommand implements GlobalSlashCommand {
 
-    private final String COMMAND_NAME= "info";
-
     @Override
     public String getName() {
-        return COMMAND_NAME;
+        return GlobalSlashTag.INFO_COMMAND;
     }
 
     @Override
     public SlashCommandBuilder getCommandBuilder() {
-        return SlashCommand.with(COMMAND_NAME, "An info command");
+        return SlashCommand.with(GlobalSlashTag.INFO_COMMAND, "An info command");
     }
 
     @Override
@@ -46,8 +45,7 @@ public class InfoGlobalSlashCommand implements GlobalSlashCommand {
                         ActionRow.of(
                                 Button.primary("info-bot", "Bot Info"),
                                 Button.primary("info-clan", "Clan Info"),
-                                Button.primary("info-event", "Event Info"),
-                                Button.danger("delete", "Close")
+                                Button.primary("info-event", "Event Info")
                         )
                 )
                 .respond();
