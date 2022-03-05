@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.util.List;
 
 @Component
+@Deprecated
 public class CommandListener implements MessageCreateListener {
 
     @Autowired

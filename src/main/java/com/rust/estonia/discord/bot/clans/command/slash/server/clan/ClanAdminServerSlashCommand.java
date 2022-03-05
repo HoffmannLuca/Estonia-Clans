@@ -159,6 +159,34 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                 .setDescription("something went wrong..");
 
 
+        Role clanRole = null;
+        String newClanName = "";
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.CLAN)){
+                if(option.getRoleValue().isPresent()){
+                    clanRole = option.getRoleValue().get();
+                }
+            }
+            if(option.getName().equals(OptionLabelTag.NAME)){
+                if(option.getStringValue().isPresent()){
+                    newClanName = option.getStringValue().get();
+                }
+            }
+        }
+
+        if (clanRole != null && !newClanName.equals("")) {
+            if(clanService.isClanRole(server, clanRole)){
+                String oldClanName = clanRole.getName();
+                clanService.renameClan(server, clanRole, newClanName);
+
+                responseEmbedBuilder.setColor(Color.GREEN)
+                        .setTitle("Clan rename success!")
+                        .setDescription(clanRole.getMentionTag() + " clan was renamed from **"+oldClanName+"** to **"+newClanName+"**");
+            } else {
+                responseEmbedBuilder.setDescription(clanRole.getMentionTag() + " is not a clan");
+            }
+        }
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
