@@ -70,31 +70,31 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
                         SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, FIRST_OPTION_ROLE, "Assign a role to a role tag", Arrays.asList(
 
-                                SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "ROLE-TAG", "The permission to allow", true,roleOptions),
-                                SlashCommandOption.create(SlashCommandOptionType.ROLE, "ROLE", "The user which permissions should be changed", true)
+                                SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.ROLE_TAG, "description", true,roleOptions),
+                                SlashCommandOption.create(SlashCommandOptionType.ROLE, OptionLabelTag.ROLE, "description", true)
 
                         )),
 
                         SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND_GROUP, FIRST_OPTION_CHANNEL, "Assign a channel to a channel tag", Arrays.asList(
 
-                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CHANNEL_SECOND_OPTION_TEXT, "Assign a role to a role tag", Arrays.asList(
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CHANNEL_SECOND_OPTION_TEXT, "Assign a text channel to a channel tag", Arrays.asList(
 
-                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "CHANNEL-TAG", "The permission to allow", true,textChannelOptions),
-                                        SlashCommandOption.create(SlashCommandOptionType.CHANNEL, "CHANNEL", "The user which permissions should be changed", true)
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.CHANNEL_TAG, "description", true,textChannelOptions),
+                                        SlashCommandOption.create(SlashCommandOptionType.CHANNEL, OptionLabelTag.CHANNEL, "description", true)
 
                                 )),
-                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CHANNEL_SECOND_OPTION_VOICE, "Assign a role to a role tag", Arrays.asList(
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CHANNEL_SECOND_OPTION_VOICE, "Assign a voice channel to a channel tag", Arrays.asList(
 
-                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "CHANNEL-TAG", "The permission to allow", true,voiceChannelOptions),
-                                        SlashCommandOption.create(SlashCommandOptionType.CHANNEL, "CHANNEL", "The user which permissions should be changed", true)
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.CHANNEL_TAG, "description", true,voiceChannelOptions),
+                                        SlashCommandOption.create(SlashCommandOptionType.CHANNEL, OptionLabelTag.CHANNEL, "description", true)
 
                                 ))
                         )),
 
                         SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, FIRST_OPTION_CATEGORY, "Assign a category to a category tag", Arrays.asList(
 
-                                SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, "CATEGORY-TAG", "The permission to allow", true,categoryOptions),
-                                SlashCommandOption.create(SlashCommandOptionType.CHANNEL, "CATEGORY", "The user which permissions should be changed", true)
+                                SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.CATEGORY_TAG, "description", true,categoryOptions),
+                                SlashCommandOption.create(SlashCommandOptionType.CHANNEL, OptionLabelTag.CATEGORY, "description", true)
                         ))
                 )
         ).setDefaultPermission(true);
@@ -121,57 +121,63 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
             case FIRST_OPTION_CATEGORY:
                 setCategory(interaction, server, commandArguments);
                 break;
-        }
 
+            default:
+
+                interaction.createImmediateResponder()
+                        .setContent("ERROR: "+ServerSlashTag.SETUP_COMMAND+" - No command found with the name "+firstOption)
+                        .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
+                        .respond();
+        }
     }
 
     private void showSetupInfo(SlashCommandInteraction interaction, Server server){
 
-        EmbedBuilder embedBuilder = new EmbedBuilder()
+        EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setTitle("__Setup Info__")
                 .setAuthor(interaction.getApi().getYourself());
 
         HashMap<String, Long> roleIdMap = setupService.getServerRoleIdMap(server);
         if (roleIdMap.size() != 0) {
-            embedBuilder.addField("Role Settings", "-----------------------------------", false);
+            responseEmbedBuilder.addField("Role Settings", "-----------------------------------", false);
             for (String key : roleIdMap.keySet()) {
-                embedBuilder.addField(key, discordCoreUtil.getRoleAsMentionTag(server, roleIdMap.get(key)), true);
+                responseEmbedBuilder.addField(key, discordCoreUtil.getRoleAsMentionTag(server, roleIdMap.get(key)), true);
             }
         }
 
         HashMap<String, Long> textChannelIdMap = setupService.getServerTextChannelIdMap(server);
         if (textChannelIdMap.size() != 0) {
-            embedBuilder.addField("Text Channel Settings", "-----------------------------------", false);
+            responseEmbedBuilder.addField("Text Channel Settings", "-----------------------------------", false);
             for (String key : textChannelIdMap.keySet()) {
-                embedBuilder.addField(key, discordCoreUtil.getTextChannelAsMentionTag(server, textChannelIdMap.get(key)), true);
+                responseEmbedBuilder.addField(key, discordCoreUtil.getTextChannelAsMentionTag(server, textChannelIdMap.get(key)), true);
             }
         }
 
         HashMap<String, Long> voiceChannelIdMap = setupService.getServerVoiceChannelIdMap(server);
         if (voiceChannelIdMap.size() != 0) {
-            embedBuilder.addField("Voice Channel Settings", "-----------------------------------", false);
+            responseEmbedBuilder.addField("Voice Channel Settings", "-----------------------------------", false);
             for (String key : voiceChannelIdMap.keySet()) {
-                embedBuilder.addField(key, discordCoreUtil.getVoiceChannelName(server, voiceChannelIdMap.get(key)), true);
+                responseEmbedBuilder.addField(key, discordCoreUtil.getVoiceChannelName(server, voiceChannelIdMap.get(key)), true);
             }
         }
 
         HashMap<String, Long> categoryIdMap = setupService.getServerCategoryIdMap(server);
         if (categoryIdMap.size() != 0) {
-            embedBuilder.addField("Category Settings", "-----------------------------------", false);
+            responseEmbedBuilder.addField("Category Settings", "-----------------------------------", false);
             for (String key : categoryIdMap.keySet()) {
-                embedBuilder.addField(key, discordCoreUtil.getChannelCategoryName(server, categoryIdMap.get(key)), true);
+                responseEmbedBuilder.addField(key, discordCoreUtil.getChannelCategoryName(server, categoryIdMap.get(key)), true);
             }
         }
 
         interaction.createImmediateResponder()
-                .addEmbed(embedBuilder)
+                .addEmbed(responseEmbedBuilder)
                 .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                 .respond();
     }
 
     private void setRole(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments){
 
-        EmbedBuilder embedBuilder = new EmbedBuilder()
+        EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Setup error!")
                 .setDescription("something went wrong..");
@@ -189,14 +195,14 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
         if(role!=null && !roleTag.equals("")){
             if(setupService.setServerRoleByRoleTag(server, role, roleTag)){
-                embedBuilder.setColor(Color.GREEN)
+                responseEmbedBuilder.setColor(Color.GREEN)
                         .setTitle("Setup success!")
                         .setDescription("**"+role.getMentionTag()+"** was assigned to the role tag: **"+roleTag+"**");
             }
         }
 
         interaction.createImmediateResponder()
-                .addEmbed(embedBuilder)
+                .addEmbed(responseEmbedBuilder)
                 .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                 .respond();
     }
@@ -204,7 +210,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
     private void setChannel(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments, String secondOption) {
 
-        EmbedBuilder embedBuilder = new EmbedBuilder()
+        EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Setup error!")
                 .setDescription("something went wrong..");
@@ -229,12 +235,12 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                         TextChannel textChannel = channel.asServerTextChannel().get();
                         String textChannelName = channel.asServerTextChannel().get().getMentionTag();
                         if(setupService.setServerTextChannelByChannelTag(server, textChannel, channelTag)) {
-                            embedBuilder.setColor(Color.GREEN)
+                            responseEmbedBuilder.setColor(Color.GREEN)
                                     .setTitle("Setup success!")
                                     .setDescription(textChannelName + " was assigned to the text channel tag: **" + channelTag + "**");
                         }
                     } else {
-                        embedBuilder.setColor(Color.RED)
+                        responseEmbedBuilder.setColor(Color.RED)
                                 .setTitle("Setup error!")
                                 .setDescription("Please select a text channel");
                     }
@@ -245,12 +251,12 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                         VoiceChannel voiceChannel = channel.asServerVoiceChannel().get();
                         String voiceChannelName = channel.asServerVoiceChannel().get().getName();
                         if(setupService.setServerVoiceChannelByChannelTag(server, voiceChannel, channelTag)) {
-                            embedBuilder.setColor(Color.GREEN)
+                            responseEmbedBuilder.setColor(Color.GREEN)
                                     .setTitle("Setup success!")
                                     .setDescription("**"+voiceChannelName + "** was assigned to the voice channel tag: **" + channelTag + "**");
                         }
                     } else {
-                        embedBuilder.setColor(Color.RED)
+                        responseEmbedBuilder.setColor(Color.RED)
                                 .setTitle("Setup error!")
                                 .setDescription("Please select a voice channel");
                     }
@@ -262,14 +268,14 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         }
 
         interaction.createImmediateResponder()
-                .addEmbed(embedBuilder)
+                .addEmbed(responseEmbedBuilder)
                 .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                 .respond();
     }
 
     private void setCategory(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments){
 
-        EmbedBuilder embedBuilder = new EmbedBuilder()
+        EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Setup error!")
                 .setDescription("something went wrong..");
@@ -289,19 +295,19 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
             if(channel.asChannelCategory().isPresent()){
                 ChannelCategory category = channel.asChannelCategory().get();
                 if(setupService.setServerCategoryByCategoryTag(server, category, categoryTag)){
-                    embedBuilder.setColor(Color.GREEN)
+                    responseEmbedBuilder.setColor(Color.GREEN)
                             .setTitle("Setup success!")
                             .setDescription("**"+category.getName()+"** was assigned to the category tag: **"+categoryTag+"**");
                 }
             } else {
-                embedBuilder.setColor(Color.RED)
+                responseEmbedBuilder.setColor(Color.RED)
                         .setTitle("Setup error!")
                         .setDescription("Please select a category");
             }
         }
 
         interaction.createImmediateResponder()
-                .addEmbed(embedBuilder)
+                .addEmbed(responseEmbedBuilder)
                 .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                 .respond();
     }

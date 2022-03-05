@@ -28,26 +28,27 @@ public class ClanService {
 
     public final String CLAN_TEXT_CHAT = "clan-text-chat";
 
-    public Clan createClan(Server server, User leader, String clanName){
+    public Role createClan(Server server, User leader, String clanName){
 
         Clan clan = getClan(server, leader);
         if(clan == null){
             clan = repository.save(new Clan(server.getId(), leader.getId(), clanName));
         }
-        return clan;
+
+        return getClanRole(server, clan);
     }
 
-    public Clan getClan(Server server, User leader){
+    private Clan getClan(Server server, User leader){
 
         return repository.findByServerIdAndClanLeaderId(server.getId(), leader.getId());
     }
 
-    public Clan getClanByRole(Server server, Role clanRole){
+    private Clan getClanByRole(Server server, Role clanRole){
 
         return repository.findByServerIdAndClanRoleId(server.getId(), clanRole.getId());
     }
 
-    public Role getClanRole(Server server, Clan clan){
+    private Role getClanRole(Server server, Clan clan){
 
         if(clan != null) {
             if (server.getRoleById(clan.getClanRoleId()).isPresent()) {
@@ -57,7 +58,7 @@ public class ClanService {
                     Role clanRole = server.createRoleBuilder()
                             .setPermissions(discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_EMPTY))
                             .setName(clan.getClanName())
-                            .setMentionable(false)
+                            .setMentionable(true)
                             .setDisplaySeparately(false)
                             .setColor(Color.WHITE)
                             .setAuditLogReason("Create clan role")
@@ -73,14 +74,21 @@ public class ClanService {
         return null;
     }
 
-    public TextChannel getClanTextChat(Server server, Clan clan){
+    public Role getClanRoleByLeader(Server server, User clanLeader){
+
+        Clan clan = getClan(server, clanLeader);
+        return getClanRole(server, clan);
+    }
+
+    public TextChannel getClanTextChat(Server server, Role clanRole){
+
+        Clan clan = getClanByRole(server, clanRole);
 
         if(clan != null){
             if(server.getTextChannelById(clan.getClanTextChatId()).isPresent()){
                 return server.getTextChannelById(clan.getClanTextChatId()).get();
             } else {
                 try{
-                    Role clanRole = getClanRole(server, clan);
                     TextChannel clanTextChat = server.createTextChannelBuilder()
                             .setName(clan.getClanName())
                             .addPermissionOverwrite(server.getEveryoneRole(), discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_ONLY))
@@ -99,7 +107,15 @@ public class ClanService {
         return null;
     }
 
-    public void deleteClan(Server server, Clan clan){
+    public boolean isClanRole(Server server, Role clanRole){
+
+        Clan clan = getClanByRole(server, clanRole);
+        return clan != null;
+    }
+
+    public void deleteClan(Server server, Role clanRole){
+
+        Clan clan = getClanByRole(server, clanRole);
 
         if(server.getRoleById(clan.getClanRoleId()).isPresent()){
             server.getRoleById(clan.getClanRoleId()).get().delete();
