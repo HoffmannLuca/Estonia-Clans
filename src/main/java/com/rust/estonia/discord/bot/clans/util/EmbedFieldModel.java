@@ -2,6 +2,7 @@ package com.rust.estonia.discord.bot.clans.util;
 
 import org.javacord.api.entity.message.embed.EditableEmbedField;
 
+@Deprecated
 public class EmbedFieldModel implements EditableEmbedField {
 
     private String name;
@@ -10,6 +11,7 @@ public class EmbedFieldModel implements EditableEmbedField {
 
     private boolean inline;
 
+    @Deprecated
     public EmbedFieldModel(String name, String value, boolean inline) {
 
         this.name = name;
@@ -18,6 +20,7 @@ public class EmbedFieldModel implements EditableEmbedField {
     }
 
     @Override
+    @Deprecated
     public String toString() {
         return String.format(
                 "EmbedField[\n" +
@@ -32,31 +35,37 @@ public class EmbedFieldModel implements EditableEmbedField {
     }
 
     @Override
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
 
     @Override
+    @Deprecated
     public void setValue(String value) {
         this.value = value;
     }
 
     @Override
+    @Deprecated
     public void setInline(boolean inline) {
         this.inline = inline;
     }
 
     @Override
+    @Deprecated
     public String getValue() {
         return this.value;
     }
 
     @Override
+    @Deprecated
     public boolean isInline() {
         return this.inline;
     }
 
     @Override
+    @Deprecated
     public String getName() {
         return this.name;
     }

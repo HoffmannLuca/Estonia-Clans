@@ -10,6 +10,7 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.intent.Intent;
 import org.javacord.api.entity.server.Server;
+import org.javacord.api.interaction.ServerApplicationCommandPermissionsBuilder;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @SpringBootApplication
@@ -94,7 +94,14 @@ public class EstoniaClansApplication {
 			serverCommandBuilder.add(command.getCommandBuilder());
 		}
 		for(Server server : api.getServers()){
+
+			List<ServerApplicationCommandPermissionsBuilder> serverPermissionBuilder = new ArrayList<>();
+			for(ServerSlashCommand command : serverSlashCommands){
+				serverPermissionBuilder.add(command.getPermissionBuilder(server));
+			}
+			server.getApi().batchUpdateApplicationCommandPermissions(server, serverPermissionBuilder);
 			api.bulkOverwriteServerApplicationCommands(server, serverCommandBuilder);
+			api.batchUpdateApplicationCommandPermissions(server, serverPermissionBuilder);
 		}
 	}
 

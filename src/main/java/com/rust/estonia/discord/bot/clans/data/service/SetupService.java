@@ -7,10 +7,13 @@ import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.channel.VoiceChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
+import org.javacord.api.interaction.ApplicationCommandPermissionType;
+import org.javacord.api.interaction.ApplicationCommandPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class SetupService {
@@ -226,6 +229,16 @@ public class SetupService {
             setup.setCategoryIdMap(categoryIdMap);
             updateSetup(setup);
         }
+    }
+
+    public List<ApplicationCommandPermissions> addPermissionsBySetupRoleTag(List<ApplicationCommandPermissions> permissionsList, Server server, String roleTag, boolean permission) {
+
+        Role role = getServerRoleByRoleTag(server, roleTag);
+        if(role!=null){
+            permissionsList.add(ApplicationCommandPermissions.create(role.getId(), ApplicationCommandPermissionType.ROLE, permission));
+        }
+
+        return permissionsList;
     }
 
     private Setup updateSetup(Setup setup){

@@ -97,7 +97,16 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                                 SlashCommandOption.create(SlashCommandOptionType.CHANNEL, OptionLabelTag.CATEGORY, "description", true)
                         ))
                 )
-        ).setDefaultPermission(true);
+        ).setDefaultPermission(false);
+    }
+
+    @Override
+    public List<ApplicationCommandPermissions> addApplicationCommandPermissions(List<ApplicationCommandPermissions> permissionsList, Server server) {
+
+        permissionsList.add(ApplicationCommandPermissions.create(server.getOwnerId(), ApplicationCommandPermissionType.USER, true));
+        permissionsList = setupService.addPermissionsBySetupRoleTag(permissionsList, server, RoleTag.ADMIN_ROLE, true);
+
+        return permissionsList;
     }
 
     @Override

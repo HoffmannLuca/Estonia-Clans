@@ -2,8 +2,10 @@ package com.rust.estonia.discord.bot.clans.command.slash.server.clan;
 
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
 import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
+import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
+import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
@@ -24,6 +26,9 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private ClanService clanService;
+
+    @Autowired
+    private SetupService setupService;
 
     private final String FIRST_OPTION_CREATE = "create";
     private final String FIRST_OPTION_DISBAND = "disband";
@@ -67,7 +72,17 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                         )
 
                 )
-        ).setDefaultPermission(true);
+        ).setDefaultPermission(false);
+    }
+
+    @Override
+    public List<ApplicationCommandPermissions> addApplicationCommandPermissions(List<ApplicationCommandPermissions> permissionsList, Server server) {
+
+        permissionsList.add(ApplicationCommandPermissions.create(server.getOwnerId(), ApplicationCommandPermissionType.USER, true));
+        permissionsList = setupService.addPermissionsBySetupRoleTag(permissionsList, server, RoleTag.ADMIN_ROLE, true);
+        permissionsList = setupService.addPermissionsBySetupRoleTag(permissionsList, server, RoleTag.MODERATOR_ROLE, true);
+
+        return permissionsList;
     }
 
     @Override

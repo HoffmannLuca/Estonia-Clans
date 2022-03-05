@@ -2,13 +2,16 @@ package com.rust.estonia.discord.bot.clans.command.slash.server.clan;
 
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
 import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
+import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 import org.javacord.api.interaction.callback.InteractionCallbackDataFlag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -18,6 +21,9 @@ import java.util.List;
 
 @Component
 public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
+
+    @Autowired
+    private SetupService setupService;
 
     private final String FIRST_OPTION_RENAME = "rename";
     private final String FIRST_OPTION_PROMOTE = "promote";
@@ -49,7 +55,15 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                         SlashCommandOption.create(SlashCommandOptionType.SUB_COMMAND, FIRST_OPTION_DISBAND, "description")
 
                 )
-        ).setDefaultPermission(true);
+        ).setDefaultPermission(false);
+    }
+
+    @Override
+    public List<ApplicationCommandPermissions> addApplicationCommandPermissions(List<ApplicationCommandPermissions> permissionsList, Server server) {
+
+        permissionsList = setupService.addPermissionsBySetupRoleTag(permissionsList, server, RoleTag.CLAN_LEADER_ROLE, true);
+
+        return permissionsList;
     }
 
     @Override

@@ -94,6 +94,7 @@ public class ClanService {
                             .addPermissionOverwrite(server.getEveryoneRole(), discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_ONLY))
                             .addPermissionOverwrite(clanRole, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND))
                            // .setCategory()
+                            .setTopic(clanRole.getMentionTag())
                             .setAuditLogReason("Create clan text chat")
                             .create().get();
                     clan.setClanTextChatId(clanTextChat.getId());

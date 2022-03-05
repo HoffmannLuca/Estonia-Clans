@@ -27,21 +27,34 @@ public class PermissionUtil {
 
     private Logger logger = LoggerFactory.getLogger(PermissionUtil.class);
 
+    @Deprecated
     public final String CLAN_CATEGORY = "clan-category";
+    @Deprecated
     public final String[] categoryTags = {CLAN_CATEGORY};
 
+    @Deprecated
     public final String ADMIN_COMMAND_CHANNEL = "admin-command-channel";
+    @Deprecated
     public final String CLAN_COMMAND_CHANNEL = "clan-command-channel";
+    @Deprecated
     public final String CLAN_LOG_CHANNEL = "clan-log-channel";
+    @Deprecated
     public final String[] textChannelTags = {ADMIN_COMMAND_CHANNEL, CLAN_COMMAND_CHANNEL, CLAN_LOG_CHANNEL};
 
+    @Deprecated
     public final String TEST_CHANNEL = "test-vc";
+    @Deprecated
     public final String[] voiceChannelTags = {TEST_CHANNEL};
 
+    @Deprecated
     public final String ADMIN_ROLE = "admin";
+    @Deprecated
     public final String MODERATOR_ROLE = "moderator";
+    @Deprecated
     public final String CLAN_LEADER_ROLE = "clan-leader";
+    @Deprecated
     public final String CLAN_OFFICER_ROLE = "clan-officer";
+    @Deprecated
     public final String[] roleTags = {ADMIN_ROLE, MODERATOR_ROLE, CLAN_LEADER_ROLE, CLAN_OFFICER_ROLE};
 
     private boolean isValidCategoryTag(String categoryTag){
