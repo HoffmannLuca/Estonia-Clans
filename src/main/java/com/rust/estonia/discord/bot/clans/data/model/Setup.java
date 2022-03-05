@@ -15,8 +15,6 @@ public class Setup {
 
     private String serverName;
 
-    private String prefix;
-
     private HashMap<String, Long> categoryIdMap;
 
     private HashMap<String, Long> textChannelIdMap;
@@ -28,7 +26,6 @@ public class Setup {
     public Setup(long serverId, String serverName) {
         this.serverId = serverId;
         this.serverName = serverName;
-        this.prefix = "!";
         this.categoryIdMap=new HashMap<>();
         this.textChannelIdMap=new HashMap<>();
         this.voiceChannelIdMap=new HashMap<>();
@@ -46,14 +43,6 @@ public class Setup {
     }
     public void setServerName(String serverName) {
         this.serverName = serverName;
-    }
-
-    //ServerPrefix
-    public String getPrefix() {
-        return prefix;
-    }
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     //CategoryIdMap

@@ -34,9 +34,9 @@ public class CommandListener implements MessageCreateListener {
         Message message = event.getMessage();
         String messageContent = message.getContent();
 
-        if (event.isServerMessage()) {
+        if (event.isServerMessage() && event.getServer().isPresent()) {
             Server server = event.getServer().get();
-            String prefix = setupService.getServerPrefix(server);
+            String prefix = "!";
 
             if(messageContent.startsWith(prefix)) {
                 User user = event.getMessageAuthor().asUser().get();

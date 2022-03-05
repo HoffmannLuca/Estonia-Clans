@@ -40,25 +40,6 @@ public class SetupService {
         return setup;
     }
 
-    public String getServerPrefix(Server server){
-
-        Setup setup = getSetup(server);
-        if(setup != null) {
-            return setup.getPrefix();
-        }
-        return "!";
-    }
-
-    public boolean setServerPrefix(Server server, String newPrefix){
-
-        Setup setup = getSetup(server);
-        if(setup != null) {
-            setup.setPrefix(newPrefix);
-            updateSetup(setup);
-        }
-        return true;
-    }
-
     public ChannelCategory getServerCategoryByCategoryTag(Server server, String categoryTag){
 
         Setup setup = getSetup(server);
