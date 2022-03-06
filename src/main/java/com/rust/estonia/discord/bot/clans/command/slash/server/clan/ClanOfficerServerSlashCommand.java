@@ -4,9 +4,11 @@ import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashComman
 import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
@@ -24,6 +26,9 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private SetupService setupService;
+
+    @Autowired
+    private ClanService clanService;
 
     private final String FIRST_OPTION_INVITE = "invite";
     private final String FIRST_OPTION_KICK = "kick";
@@ -89,7 +94,42 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
                 .setTitle("Clan member invite error!")
                 .setDescription("something went wrong..");
 
+        User newMember = null;
 
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.USER)){
+                if(option.getUserValue().isPresent()){
+                    newMember = option.getUserValue().get();
+                }
+            }
+        }
+
+        if(newMember!=null) {
+            if(!newMember.isBot()) {
+                Role clanRole = clanService.getClanRoleByMember(server, user);
+                if (clanRole != null) {
+                    if (!clanRole.hasUser(newMember)) {
+                        if (!clanService.isClanMember(server, newMember)) {
+
+                            //TODO send invite into invite channel and remove addUser() below
+                            clanRole.addUser(newMember);
+
+                            responseEmbedBuilder.setColor(Color.GREEN)
+                                    .setTitle("Clan member invite success!")
+                                    .setDescription(newMember.getMentionTag() + " is now a member of your clan");
+                        } else {
+                            responseEmbedBuilder.setDescription(newMember.getMentionTag() + " is already a member of another clan");
+                        }
+                    } else {
+                        responseEmbedBuilder.setDescription(newMember.getMentionTag() + " is already a member of your clan");
+                    }
+                } else {
+                    responseEmbedBuilder.setDescription("Your clan role does not exist");
+                }
+            } else {
+                responseEmbedBuilder.setDescription(newMember.getMentionTag() + " is a bot. you can only select real users");
+            }
+        }
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
@@ -104,6 +144,38 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
                 .setTitle("Clan member kick error!")
                 .setDescription("something went wrong..");
 
+        User kickMember = null;
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.USER)){
+                if(option.getUserValue().isPresent()){
+                    kickMember = option.getUserValue().get();
+                }
+            }
+        }
+
+        if(kickMember!=null) {
+            if(!kickMember.isBot()) {
+                Role clanRole = clanService.getClanRoleByMember(server, user);
+                if (clanRole != null) {
+                    if (clanRole.hasUser(kickMember)) {
+
+                        clanRole.removeUser(kickMember);
+
+                        responseEmbedBuilder.setColor(Color.GREEN)
+                                .setTitle("Clan member kick success!")
+                                .setDescription(kickMember.getMentionTag() + " is no longer a member of your clan");
+
+                    } else {
+                        responseEmbedBuilder.setDescription(kickMember.getMentionTag() + " is not a member of your clan");
+                    }
+                } else {
+                    responseEmbedBuilder.setDescription("Your clan role does not exist");
+                }
+            } else {
+                responseEmbedBuilder.setDescription(kickMember.getMentionTag() + " is a bot. you can only select real users");
+            }
+        }
 
 
         interaction.createImmediateResponder()

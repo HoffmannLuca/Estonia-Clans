@@ -84,6 +84,18 @@ public class ClanService {
         return getClanRole(server, clan);
     }
 
+    public Role getClanRoleByMember(Server server, User member){
+
+        for(Role role : server.getRoles()){
+            if(isClanRole(server, role)){
+                if(role.hasUser(member)){
+                    return role;
+                }
+            }
+        }
+        return null;
+    }
+
     public TextChannel getClanTextChat(Server server, Role clanRole){
 
         Clan clan = getClanByRole(server, clanRole);
@@ -120,14 +132,7 @@ public class ClanService {
 
     public boolean isClanMember(Server server, User user){
 
-        for(Role role : server.getRoles()){
-            if(isClanRole(server, role)){
-                if(role.hasUser(user)){
-                    return true;
-                }
-            }
-        }
-        return false;
+        return getClanRoleByMember(server, user) != null;
     }
 
     public void deleteClan(Server server, Role clanRole){
