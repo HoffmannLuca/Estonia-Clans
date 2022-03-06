@@ -27,7 +27,6 @@ public class CommandPermissionUtil {
             serverPermissionBuilder.add(command.getPermissionBuilder(server));
         }
 
-        api.batchUpdateApplicationCommandPermissions(server, serverPermissionBuilder).thenAccept(serverApplicationCommandPermissions ->
-                System.out.println(serverApplicationCommandPermissions.toString()+" - UPDATED - "+server.getName()));
+        api.batchUpdateApplicationCommandPermissions(server, serverPermissionBuilder);
     }
 }
