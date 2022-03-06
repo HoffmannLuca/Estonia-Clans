@@ -5,6 +5,7 @@ import com.rust.estonia.discord.bot.clans.data.model.Clan;
 import com.rust.estonia.discord.bot.clans.data.repository.ClanRepository;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -135,6 +136,35 @@ public class ClanService {
         return getClanRoleByMember(server, user) != null;
     }
 
+    public void renameClan(Server server, User clanLeader, String newName) {
+
+        Role clanRole = getClanRoleByLeader(server, clanLeader);
+        renameClan(server, clanRole, newName);
+    }
+
+    public void renameClan(Server server, Role clanRole, String newName) {
+
+        Clan clan = getClanByRole(server, clanRole);
+        clan.setClanName(newName);
+        updateClan(clan);
+
+        clanRole.updateName(newName);
+        if(server.getTextChannelById(clan.getClanTextChatId()).isPresent()){
+            server.getTextChannelById(clan.getClanTextChatId()).get().updateName(newName);
+        }
+
+    }
+
+    public EmbedBuilder getClanInfoEmbedBuilder(Server server, Role clanRole) {
+
+        EmbedBuilder clanInfoEmbedBuilder = new EmbedBuilder()
+                .setColor(Color.BLUE)
+                .setTitle("Clan info "+clanRole.getName())
+                .setDescription("here is information about this clan "+clanRole.getMentionTag());
+
+        return clanInfoEmbedBuilder;
+    }
+
     public void deleteClan(Server server, Role clanRole){
 
 
@@ -164,24 +194,5 @@ public class ClanService {
     private Clan updateClan(Clan clan){
 
         return repository.save(clan);
-    }
-
-    public void renameClan(Server server, User clanLeader, String newName) {
-
-        Role clanRole = getClanRoleByLeader(server, clanLeader);
-        renameClan(server, clanRole, newName);
-    }
-
-    public void renameClan(Server server, Role clanRole, String newName) {
-
-        Clan clan = getClanByRole(server, clanRole);
-        clan.setClanName(newName);
-        updateClan(clan);
-
-        clanRole.updateName(newName);
-        if(server.getTextChannelById(clan.getClanTextChatId()).isPresent()){
-            server.getTextChannelById(clan.getClanTextChatId()).get().updateName(newName);
-        }
-
     }
 }
