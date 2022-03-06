@@ -4,9 +4,11 @@ import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashComman
 import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
@@ -24,6 +26,9 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private SetupService setupService;
+
+    @Autowired
+    private ClanService clanService;
 
     private final String FIRST_OPTION_RENAME = "rename";
     private final String FIRST_OPTION_PROMOTE = "promote";
@@ -105,6 +110,31 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                 .setDescription("something went wrong..");
 
 
+        String newClanName = "";
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.NAME)){
+                if(option.getStringValue().isPresent()){
+                    newClanName = option.getStringValue().get();
+                }
+            }
+        }
+
+        if (!newClanName.equals("")) {
+            Role clanRole = clanService.getClanRoleByLeader(server, user);
+            if(clanRole!=null) {
+                String oldClanName = clanRole.getName();
+                clanService.renameClan(server, clanRole, newClanName);
+
+                responseEmbedBuilder.setColor(Color.GREEN)
+                        .setTitle("Clan rename success!")
+                        .setDescription(clanRole.getMentionTag() + " clan was renamed from **" + oldClanName + "** to **" + newClanName + "**");
+
+            } else {
+                responseEmbedBuilder.setDescription("Your clan role does not exist");
+            }
+        }
+
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
@@ -120,6 +150,53 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                 .setDescription("something went wrong..");
 
 
+        User member = null;
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.USER)){
+                if(option.getUserValue().isPresent()){
+                    member = option.getUserValue().get();
+                }
+            }
+        }
+
+        if(member!=null) {
+            if(!member.isBot()) {
+                Role clanRole = clanService.getClanRoleByLeader(server, user);
+                if (clanRole != null) {
+                    if (clanRole.hasUser(member)) {
+                        Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
+                        if(officerRole!=null){
+                            if(officerRole.hasUser(member)){
+                                Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+                                if(leaderRole!=null) {
+                                    //TODO add button to confirm
+                                    responseEmbedBuilder.setColor(Color.ORANGE)
+                                            .setTitle("User promote warning!")
+                                            .setDescription("Are you sure you want to promote " + member.getMentionTag() + " to " + leaderRole.getMentionTag() + " ?");
+                                } else {
+                                    responseEmbedBuilder.setDescription("No Role has been setup for the role tag **" + RoleTag.CLAN_LEADER_ROLE.toUpperCase() + "**");
+                                }
+                            } else {
+                                officerRole.addUser(member);
+
+                                responseEmbedBuilder.setColor(Color.GREEN)
+                                        .setTitle("User promote success!")
+                                        .setDescription(member.getMentionTag()+" is now a "+officerRole.getMentionTag());
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription("No Role has been setup for the role tag **" + RoleTag.CLAN_OFFICER_ROLE.toUpperCase() + "**");
+                        }
+                    } else {
+                        responseEmbedBuilder.setDescription(member.getMentionTag() + " is not a member of your clan");
+                    }
+                } else {
+                    responseEmbedBuilder.setDescription("Your clan role does not exist");
+                }
+            } else {
+                responseEmbedBuilder.setDescription(member.getMentionTag() + " is a bot. you can only select real users");
+            }
+        }
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
@@ -135,6 +212,47 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                 .setDescription("something went wrong..");
 
 
+        User member = null;
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.USER)){
+                if(option.getUserValue().isPresent()){
+                    member = option.getUserValue().get();
+                }
+            }
+        }
+
+        if(member!=null) {
+            if(!member.isBot()) {
+                Role clanRole = clanService.getClanRoleByLeader(server, user);
+                if (clanRole != null) {
+                    if (clanRole.hasUser(member)) {
+                        Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
+                        if(officerRole!=null){
+                            if(officerRole.hasUser(member)){
+
+                                officerRole.removeUser(member);
+
+                                responseEmbedBuilder.setColor(Color.GREEN)
+                                        .setTitle("User demote success!")
+                                        .setDescription(member.getMentionTag()+" is now a regular member and not a "+officerRole.getMentionTag()+" anymore");
+                            } else {
+                                responseEmbedBuilder.setDescription(member.getMentionTag() + " is just a regular member and not a "+officerRole.getMentionTag());
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription("No Role has been setup for the role tag **" + RoleTag.CLAN_OFFICER_ROLE.toUpperCase() + "**");
+                        }
+                    } else {
+                        responseEmbedBuilder.setDescription(member.getMentionTag() + " is not a member of your clan");
+                    }
+                } else {
+                    responseEmbedBuilder.setDescription("Your clan role does not exist");
+                }
+            } else {
+                responseEmbedBuilder.setDescription(member.getMentionTag() + " is a bot. you can only select real users");
+            }
+        }
+
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
@@ -149,7 +267,28 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                 .setTitle("Clan disband error!")
                 .setDescription("something went wrong..");
 
+        Role clanRole = clanService.getClanRoleByLeader(server, user);
+        if(clanRole!=null) {
 
+            Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+            Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
+            if(leaderRole!=null){
+                leaderRole.removeUser(user);
+            }
+            if(officerRole!=null){
+                officerRole.removeUser(user);
+            }
+
+            String clanName = clanRole.getName();
+            clanService.deleteClan(server, clanRole);
+
+            responseEmbedBuilder.setColor(Color.GREEN)
+                    .setTitle("Clan disband success!")
+                    .setDescription("**"+clanName + "** clan got deleted");
+
+        } else {
+            responseEmbedBuilder.setDescription("Your clan role does not exist");
+        }
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
