@@ -1,11 +1,9 @@
 package com.rust.estonia.discord.bot.clans;
 
+import com.rust.estonia.discord.bot.clans.command.slash.CommandPermissionUtil;
 import com.rust.estonia.discord.bot.clans.command.slash.global.GlobalSlashCommand;
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
-import com.rust.estonia.discord.bot.clans.listener.BotServerJoinListener;
-import com.rust.estonia.discord.bot.clans.listener.CommandListener;
-import com.rust.estonia.discord.bot.clans.listener.ComponentListener;
-import com.rust.estonia.discord.bot.clans.listener.SlashCommandListener;
+import com.rust.estonia.discord.bot.clans.listener.*;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.intent.Intent;
@@ -45,10 +43,16 @@ public class EstoniaClansApplication {
 	private ComponentListener componentListener;
 
 	@Autowired
+	private NewServerOwnerUpdateListener newServerOwnerUpdateListener;
+
+	@Autowired
 	private List<GlobalSlashCommand> globalSlashCommands;
 
 	@Autowired
 	private List<ServerSlashCommand> serverSlashCommands;
+
+	@Autowired
+	private CommandPermissionUtil commandPermissionUtil;
 
 	@Bean
 	@ConfigurationProperties(value = "discord-api")
@@ -72,6 +76,7 @@ public class EstoniaClansApplication {
 				.addMessageCreateListener(commandListener)
 				.addSlashCommandCreateListener(slashCommandListener)
 				.addMessageComponentCreateListener(componentListener)
+				.addServerChangeOwnerListener(newServerOwnerUpdateListener)
 
 				.login()
 				.join();
@@ -95,13 +100,9 @@ public class EstoniaClansApplication {
 		}
 		for(Server server : api.getServers()){
 
-			List<ServerApplicationCommandPermissionsBuilder> serverPermissionBuilder = new ArrayList<>();
-			for(ServerSlashCommand command : serverSlashCommands){
-				serverPermissionBuilder.add(command.getPermissionBuilder(server));
-			}
-			server.getApi().batchUpdateApplicationCommandPermissions(server, serverPermissionBuilder);
 			api.bulkOverwriteServerApplicationCommands(server, serverCommandBuilder);
-			api.batchUpdateApplicationCommandPermissions(server, serverPermissionBuilder);
+
+			commandPermissionUtil.updateServerSlashCommandPermissions(server, api);
 		}
 	}
 

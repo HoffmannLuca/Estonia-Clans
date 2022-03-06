@@ -1,5 +1,6 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server;
 
+import com.rust.estonia.discord.bot.clans.command.slash.CommandPermissionUtil;
 import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
@@ -28,6 +29,9 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private DiscordCoreUtil discordCoreUtil;
+
+    @Autowired
+    private CommandPermissionUtil commandPermissionUtil;
 
     //Option Tags
     private final String FIRST_OPTION_INFO = "info";
@@ -209,6 +213,8 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                         .setDescription("**"+role.getMentionTag()+"** was assigned to the role tag: **"+roleTag+"**");
             }
         }
+
+        commandPermissionUtil.updateServerSlashCommandPermissions(server);
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
