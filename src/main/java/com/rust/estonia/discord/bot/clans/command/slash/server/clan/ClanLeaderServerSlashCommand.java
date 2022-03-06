@@ -171,7 +171,7 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                                 Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
                                 if(leaderRole!=null) {
                                     //TODO add button to confirm
-                                    responseEmbedBuilder.setColor(Color.ORANGE)
+                                    responseEmbedBuilder.setColor(Color.YELLOW)
                                             .setTitle("User promote warning!")
                                             .setDescription("Are you sure you want to promote " + member.getMentionTag() + " to " + leaderRole.getMentionTag() + " ?");
                                 } else {

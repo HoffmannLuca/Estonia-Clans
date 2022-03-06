@@ -138,7 +138,7 @@ public class ClanServerSlashCommand implements ServerSlashCommand {
                 }
             } else {
                 //TODO add button (give leader to) & (disband) with confirmation and member select menu
-                responseEmbedBuilder.setTitle("Clan leave warning!").setColor(Color.ORANGE)
+                responseEmbedBuilder.setTitle("Clan leave warning!").setColor(Color.YELLOW)
                         .setDescription("You are the leader of your clan! you have to give leader role to someone else in your clan or disband clan");
             }
         } else {

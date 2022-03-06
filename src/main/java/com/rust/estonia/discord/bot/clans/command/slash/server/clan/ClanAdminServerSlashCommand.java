@@ -144,29 +144,33 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
         }
 
         if(clanLeader!=null && !clanName.equals("")) {
-            if(clanService.getClanRoleByLeader(server, clanLeader) == null) {
-                if(!clanService.isClanMember(server, clanLeader)) {
-                    if(setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE) != null) {
-                        Role clanLeaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
-                        Role clanRole = clanService.createClan(server, clanLeader, clanName);
-                        clanLeaderRole.addUser(clanLeader);
-                        clanRole.addUser(clanLeader);
-                        TextChannel clanTextChat = clanService.getClanTextChat(server, clanRole);
-                        if (clanTextChat != null) {
-                            clanTextChat.sendMessage(clanRole.getMentionTag());
-                        }
+            if(!clanLeader.isBot()) {
+                if (clanService.getClanRoleByLeader(server, clanLeader) == null) {
+                    if (!clanService.isClanMember(server, clanLeader)) {
+                        if (setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE) != null) {
+                            Role clanLeaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+                            Role clanRole = clanService.createClan(server, clanLeader, clanName);
+                            clanLeaderRole.addUser(clanLeader);
+                            clanRole.addUser(clanLeader);
+                            TextChannel clanTextChat = clanService.getClanTextChat(server, clanRole);
+                            if (clanTextChat != null) {
+                                clanTextChat.sendMessage(clanRole.getMentionTag());
+                            }
 
-                        responseEmbedBuilder.setColor(Color.GREEN)
-                                .setTitle("Clan create success!")
-                                .setDescription(clanRole.getMentionTag() + " clan was created and " + clanLeader.getMentionTag() + " was assigned as **clan leader**");
+                            responseEmbedBuilder.setColor(Color.GREEN)
+                                    .setTitle("Clan create success!")
+                                    .setDescription(clanRole.getMentionTag() + " clan was created and " + clanLeader.getMentionTag() + " was assigned as **clan leader**");
+                        } else {
+                            responseEmbedBuilder.setDescription("No Role has been setup for the role tag **" + RoleTag.CLAN_LEADER_ROLE.toUpperCase() + "**");
+                        }
                     } else {
-                        responseEmbedBuilder.setDescription("No Role has been setup for the role tag **"+RoleTag.CLAN_LEADER_ROLE.toUpperCase()+"**");
+                        responseEmbedBuilder.setDescription(clanLeader.getMentionTag() + " is already a member of a clan");
                     }
                 } else {
-                    responseEmbedBuilder.setDescription(clanLeader.getMentionTag() + " is already a member of a clan");
+                    responseEmbedBuilder.setDescription(clanLeader.getMentionTag() + " is already assigned as **clan leader** in a clan");
                 }
             } else {
-                responseEmbedBuilder.setDescription(clanLeader.getMentionTag() + " is already assigned as **clan leader** in a clan");
+                responseEmbedBuilder.setDescription(clanLeader.getMentionTag() + " is a bot. you can only select real users");
             }
         }
         interaction.createImmediateResponder()
@@ -227,6 +231,9 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                 .setDescription("something went wrong..");
 
 //TODO after category implementation
+        responseEmbedBuilder.setColor(Color.YELLOW)
+                .setTitle("Clan promote warning!")
+                .setDescription("this command is not implemented yet");
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
@@ -242,6 +249,9 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                 .setDescription("something went wrong..");
 
 //TODO after category implementation
+        responseEmbedBuilder.setColor(Color.YELLOW)
+                .setTitle("Clan demote warning!")
+                .setDescription("this command is not implemented yet");
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
