@@ -1,5 +1,6 @@
 package com.rust.estonia.discord.bot.clans.data.service;
 
+import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.model.Clan;
 import com.rust.estonia.discord.bot.clans.data.repository.ClanRepository;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
@@ -20,6 +21,9 @@ public class ClanService {
 
     @Autowired
     private ClanRepository repository;
+
+    @Autowired
+    private SetupService setupService;
 
     @Autowired
     private DiscordCoreUtil discordCoreUtil;
@@ -114,7 +118,32 @@ public class ClanService {
         return clan != null;
     }
 
+    public boolean isClanMember(Server server, User user){
+
+        for(Role role : server.getRoles()){
+            if(isClanRole(server, role)){
+                if(role.hasUser(user)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void deleteClan(Server server, Role clanRole){
+
+
+        Role clanLeaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+        Role clanOfficerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
+
+        for(User member : clanRole.getUsers()){
+            if(clanLeaderRole != null){
+                clanLeaderRole.removeUser(member);
+            }
+            if(clanOfficerRole != null) {
+                clanOfficerRole.removeUser(member);
+            }
+        }
 
         Clan clan = getClanByRole(server, clanRole);
 
