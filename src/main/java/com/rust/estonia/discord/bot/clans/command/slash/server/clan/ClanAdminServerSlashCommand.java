@@ -230,10 +230,33 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                 .setTitle("Clan promote error!")
                 .setDescription("something went wrong..");
 
-//TODO after category implementation
-        responseEmbedBuilder.setColor(Color.YELLOW)
-                .setTitle("Clan promote warning!")
-                .setDescription("this command is not implemented yet");
+        Role clanRole = null;
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.CLAN)){
+                if(option.getRoleValue().isPresent()){
+                    clanRole = option.getRoleValue().get();
+                }
+            }
+        }
+
+
+        if (clanRole != null) {
+            if(clanService.isClanRole(server, clanRole)){
+
+                if(clanService.promoteClan(server, clanRole)){
+
+                    String clanCategoryTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase();
+                    responseEmbedBuilder.setColor(Color.GREEN)
+                            .setTitle("Clan promote success!")
+                            .setDescription(clanRole.getMentionTag()+" clan was promoted to "+ clanCategoryTag);
+                } else {
+                    responseEmbedBuilder.setDescription(clanRole.getMentionTag()+" can't be promoted because it already has the highest rank");
+                }
+            } else {
+                responseEmbedBuilder.setDescription(clanRole.getMentionTag() + " is not a clan");
+            }
+        }
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)
@@ -248,10 +271,33 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                 .setTitle("Clan demote error!")
                 .setDescription("something went wrong..");
 
-//TODO after category implementation
-        responseEmbedBuilder.setColor(Color.YELLOW)
-                .setTitle("Clan demote warning!")
-                .setDescription("this command is not implemented yet");
+        Role clanRole = null;
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.CLAN)){
+                if(option.getRoleValue().isPresent()){
+                    clanRole = option.getRoleValue().get();
+                }
+            }
+        }
+
+
+        if (clanRole != null) {
+            if(clanService.isClanRole(server, clanRole)){
+
+                if(clanService.demoteClan(server, clanRole)){
+
+                    String clanCategoryTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase();
+                    responseEmbedBuilder.setColor(Color.GREEN)
+                            .setTitle("Clan promote success!")
+                            .setDescription(clanRole.getMentionTag()+" clan was demoted to "+ clanCategoryTag);
+                } else {
+                    responseEmbedBuilder.setDescription(clanRole.getMentionTag()+" can't be demoted because it already has the lowes rank");
+                }
+            } else {
+                responseEmbedBuilder.setDescription(clanRole.getMentionTag() + " is not a clan");
+            }
+        }
 
         interaction.createImmediateResponder()
                 .addEmbed(responseEmbedBuilder)

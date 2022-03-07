@@ -3,23 +3,29 @@ package com.rust.estonia.discord.bot.clans.data.service;
 import com.rust.estonia.discord.bot.clans.data.model.Setup;
 import com.rust.estonia.discord.bot.clans.data.repository.SetupRepository;
 import org.javacord.api.entity.channel.ChannelCategory;
+import org.javacord.api.entity.channel.ChannelCategoryBuilder;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.channel.VoiceChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.ApplicationCommandPermissionType;
 import org.javacord.api.interaction.ApplicationCommandPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Component
 public class SetupService {
 
     @Autowired
     private SetupRepository repository;
+
+    private Logger logger = LoggerFactory.getLogger(SetupService.class);
 
     private Setup getSetup(Server server){
 
@@ -45,12 +51,30 @@ public class SetupService {
 
     public ChannelCategory getServerCategoryByCategoryTag(Server server, String categoryTag){
 
+        return getServerCategoryByCategoryTag(server, categoryTag, false);
+    }
+
+    public ChannelCategory getServerCategoryByCategoryTag(Server server, String categoryTag, boolean createIfNotExist){
+
         Setup setup = getSetup(server);
         if(setup != null) {
             if(setup.getCategoryIdMap().containsKey(categoryTag)) {
                 long id = setup.getCategoryIdMap().get(categoryTag);
                 if (server.getChannelCategoryById(id).isPresent()) {
                     return server.getChannelCategoryById(id).get();
+                }
+            }
+            if(createIfNotExist){
+                try {
+                    ChannelCategory category = new ChannelCategoryBuilder(server)
+                            .setName(categoryTag.replace("-", " "))
+                            .setAuditLogReason("Create category "+categoryTag.toUpperCase()+" because not yet assigned")
+                            .create().get();
+
+                    setServerCategoryByCategoryTag(server, category, categoryTag);
+                    return category;
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.error(e.getMessage());
                 }
             }
         }

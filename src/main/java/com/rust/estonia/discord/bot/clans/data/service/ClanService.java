@@ -1,9 +1,12 @@
 package com.rust.estonia.discord.bot.clans.data.service;
 
+import com.rust.estonia.discord.bot.clans.constant.CategoryTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.model.Clan;
 import com.rust.estonia.discord.bot.clans.data.repository.ClanRepository;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import org.javacord.api.entity.channel.ChannelCategory;
+import org.javacord.api.entity.channel.ServerTextChannelBuilder;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
@@ -106,14 +109,18 @@ public class ClanService {
                 return server.getTextChannelById(clan.getClanTextChatId()).get();
             } else {
                 try{
-                    TextChannel clanTextChat = server.createTextChannelBuilder()
+                    ServerTextChannelBuilder channelBuilder = server.createTextChannelBuilder()
                             .setName(clan.getClanName())
                             .addPermissionOverwrite(server.getEveryoneRole(), discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_ONLY))
                             .addPermissionOverwrite(clanRole, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND))
-                           // .setCategory()
                             .setTopic(clanRole.getMentionTag())
-                            .setAuditLogReason("Create clan text chat")
-                            .create().get();
+                            .setAuditLogReason("Create clan text chat");
+
+                    ChannelCategory category = setupService.getServerCategoryByCategoryTag(server, getClanCategoryTag(clan.getClanRank()), true);
+                    if(category!=null){
+                        channelBuilder.setCategory(category);
+                    }
+                    TextChannel clanTextChat = channelBuilder.create().get();
                     clan.setClanTextChatId(clanTextChat.getId());
                     updateClan(clan);
                     return clanTextChat;
@@ -163,6 +170,92 @@ public class ClanService {
                 .setDescription("here is information about this clan "+clanRole.getMentionTag());
 
         return clanInfoEmbedBuilder;
+    }
+
+    public int getClanRank(Server server, Role clanRole) {
+
+        Clan clan = getClanByRole(server, clanRole);
+        if(clan!=null){
+            return clan.getClanRank();
+        }
+        return -1;
+    }
+
+    public String getClanCategoryTag(int rank){
+
+        String clanCategoryTag="";
+
+        switch (rank){
+
+            case 0:
+                clanCategoryTag = CategoryTag.NEW_CLAN_CATEGORY;
+                break;
+
+            case 1:
+                clanCategoryTag = CategoryTag.ESTABLISHED_CLAN_CATEGORY;
+                break;
+
+            case 2:
+                clanCategoryTag = CategoryTag.LEGACY_CLAN_CATEGORY;
+                break;
+
+            case 3:
+                clanCategoryTag = CategoryTag.TOP_CLAN_CATEGORY;
+
+        }
+        return clanCategoryTag;
+    }
+
+    private boolean setClanCategory(Server server, Clan clan, int newRank){
+
+        if(server.getTextChannelById(clan.getClanTextChatId()).isPresent()) {
+
+            ChannelCategory clanCategory = setupService.getServerCategoryByCategoryTag(server, getClanCategoryTag(newRank), true);
+
+            if(clanCategory!=null){
+                if(server.getTextChannelById(clan.getClanTextChatId()).isPresent()) {
+                    server.getTextChannelById(clan.getClanTextChatId()).get().updateCategory(clanCategory);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean promoteClan(Server server, Role clanRole){
+
+        Clan clan = getClanByRole(server, clanRole);
+        if(clan!=null){
+            if(clan.getClanRank()<3){
+                if(setClanCategory(server, clan, (clan.getClanRank())+1)) {
+                    clan.setClanRank(clan.getClanRank() + 1);
+                    updateClan(clan);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean demoteClan(Server server, Role clanRole){
+
+        Clan clan = getClanByRole(server, clanRole);
+        if(clan!=null){
+            if(clan.getClanRank()>0){
+                if(setClanCategory(server, clan, (clan.getClanRank())-1)) {
+                    clan.setClanRank(clan.getClanRank() - 1);
+                    updateClan(clan);
+                    return true;
+                } else {
+                    System.out.println("demoteClan() - setClanCategory()==false");
+                }
+            } else {
+                System.out.println("demoteClan() - !clan.getRank()>0");
+            }
+        } else {
+            System.out.println("demoteClan() - clan == null");
+        }
+        return false;
     }
 
     public void deleteClan(Server server, Role clanRole){

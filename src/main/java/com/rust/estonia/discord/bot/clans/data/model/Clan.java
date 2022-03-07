@@ -19,6 +19,8 @@ public class Clan {
 
     private long clanRoleId;
 
+    private int clanRank;
+
     private long clanTextChatId;
 
     public Clan(long serverId, long clanLeaderId, String clanName) {
@@ -26,6 +28,7 @@ public class Clan {
         this.clanLeaderId = clanLeaderId;
         this.clanName = clanName;
         this.clanRoleId = 0;
+        this.clanRank=0;
         this.clanTextChatId = 0;
     }
 
@@ -42,6 +45,10 @@ public class Clan {
     //ClanRoleId
     public long getClanRoleId() { return clanRoleId; }
     public void setClanRoleId(long clanRoleId) { this.clanRoleId = clanRoleId; }
+
+    //ClanRank
+    public int getClanRank() { return clanRank; }
+    public void setClanRank(int clanRank) { this.clanRank = clanRank; }
 
     //ClanTextChat
     public long getClanTextChatId() { return clanTextChatId; }
