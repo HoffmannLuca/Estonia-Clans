@@ -4,7 +4,6 @@ import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.ButtonInteraction;
@@ -31,7 +30,7 @@ public class DeleteMessageButtonCommand implements ButtonComponentCommand {
             return true;
         }
 
-        return false;
+        return server.isOwner(user);
     }
 
     @Override

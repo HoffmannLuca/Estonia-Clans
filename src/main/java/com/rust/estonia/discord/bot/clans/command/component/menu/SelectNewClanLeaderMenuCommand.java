@@ -1,6 +1,5 @@
-package com.rust.estonia.discord.bot.clans.command.component.button.clan;
+package com.rust.estonia.discord.bot.clans.command.component.menu;
 
-import com.rust.estonia.discord.bot.clans.command.component.button.ButtonComponentCommand;
 import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
 import com.rust.estonia.discord.bot.clans.constant.MenuTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
@@ -10,24 +9,19 @@ import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
-import org.javacord.api.entity.message.component.SelectMenu;
-import org.javacord.api.entity.message.component.SelectMenuOption;
-import org.javacord.api.entity.message.component.SelectMenuOptionBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
-import org.javacord.api.interaction.ButtonInteraction;
+import org.javacord.api.interaction.SelectMenuInteraction;
 import org.javacord.api.interaction.callback.ComponentInteractionOriginalMessageUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
-public class GiveClanLeaderSelectButtonCommand implements ButtonComponentCommand {
+public class SelectNewClanLeaderMenuCommand implements MenuComponentCommand {
 
     @Autowired
     private DiscordCoreUtil discordCoreUtil;
@@ -40,7 +34,7 @@ public class GiveClanLeaderSelectButtonCommand implements ButtonComponentCommand
 
     @Override
     public String getName() {
-        return ButtonTag.GIVE_CLAN_LEADER_SELECT;
+        return MenuTag.SELECT_NEW_CLAN_LEADER;
     }
 
     @Override
@@ -60,7 +54,8 @@ public class GiveClanLeaderSelectButtonCommand implements ButtonComponentCommand
     }
 
     @Override
-    public void performCommand(ButtonInteraction interaction, ComponentInteractionOriginalMessageUpdater messageUpdater, User user, Message message) {
+    public void performCommand(SelectMenuInteraction interaction, ComponentInteractionOriginalMessageUpdater messageUpdater, User user, Message message) {
+
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -79,32 +74,33 @@ public class GiveClanLeaderSelectButtonCommand implements ButtonComponentCommand
 
                     if (clanService.isClanRole(server, clanRole)) {
 
-                        List<SelectMenuOption> userOptions= new ArrayList<>();
+                        if(!interaction.getChosenOptions().isEmpty()){
+                            String memberId = interaction.getChosenOptions().get(0).getValue();
 
-                        for (User member : clanRole.getUsers()){
-                            if(member.getId()!=user.getId()) {
-                                String nickname = "";
-                                if(member.getNickname(server).isPresent()){
-                                    nickname = member.getNickname(server).get();
+                            if(server.getMemberById(memberId).isPresent()){
+                                User member = server.getMemberById(memberId).get();
+                                Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+                                if(leaderRole!=null) {
+
+                                    responseEmbedBuilder.setColor(Color.YELLOW)
+                                            .setTitle("Give leader role to "+member.getName())
+                                            .setDescription("Are you sure you want to promote " + member.getMentionTag() + " to " + leaderRole.getMentionTag() + " ? otherwise dismiss this message");
+
+                                    messageUpdater.setContent(clanRole.getMentionTag() + " " + member.getMentionTag())
+                                            .addComponents(ActionRow.of(
+                                                    Button.success(ButtonTag.GIVE_CLAN_LEADER_TO_USER, "Give " + member.getName() + " leader role"),
+                                                    Button.primary(ButtonTag.GIVE_CLAN_LEADER_SELECT, "Select other member")
+
+                                                    ));
+
+                                } else {
+                                    responseEmbedBuilder.setDescription("No Role has been setup for the role tag **" + RoleTag.CLAN_LEADER_ROLE.toUpperCase() + "**");
                                 }
-                                userOptions.add(new SelectMenuOptionBuilder()
-                                        .setLabel(member.getName())
-                                        .setValue(member.getIdAsString())
-                                        .setDescription(nickname)
-                                        .build());
+                            } else {
+                                responseEmbedBuilder.setDescription("no member available!");
                             }
-                        }
-                        if(!userOptions.isEmpty()) {
-
-                            responseEmbedBuilder.setColor(Color.YELLOW)
-                                    .setTitle("Give leader role to...")
-                                    .setDescription("Select a member from your clan as the new leader");
-
-                            messageUpdater.setContent(clanRole.getMentionTag()).addComponents(ActionRow.of(SelectMenu.create(MenuTag.SELECT_NEW_CLAN_LEADER, "select leader", userOptions)));
                         } else {
-                            responseEmbedBuilder.setDescription("you are the only member of this clan!");
-
-                            messageUpdater.addComponents(ActionRow.of(Button.danger(ButtonTag.DISBAND_CLAN, "Disband")));
+                            responseEmbedBuilder.setDescription("no option available!");
                         }
                     } else {
                         responseEmbedBuilder.setDescription("role is not a clan!");

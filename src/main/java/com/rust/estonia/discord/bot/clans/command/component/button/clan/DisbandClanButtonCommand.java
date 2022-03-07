@@ -48,7 +48,7 @@ public class DisbandClanButtonCommand implements ButtonComponentCommand {
             return true;
         }
 
-        return false;
+        return server.isOwner(user);
     }
 
     @Override

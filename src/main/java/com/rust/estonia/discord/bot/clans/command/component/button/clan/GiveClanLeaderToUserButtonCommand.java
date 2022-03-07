@@ -48,7 +48,7 @@ public class GiveClanLeaderToUserButtonCommand implements ButtonComponentCommand
             return true;
         }
 
-        return false;
+        return server.isOwner(user);
     }
 
     @Override
