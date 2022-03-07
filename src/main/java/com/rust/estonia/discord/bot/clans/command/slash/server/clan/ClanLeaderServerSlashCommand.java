@@ -182,7 +182,7 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
 
                                     response.setContent(clanRole.getMentionTag()+" "+member.getMentionTag()).addComponents(
                                             ActionRow.of(
-                                                    Button.primary("give-leader-to-user", "Give "+member.getName()+" leader role")
+                                                    Button.primary(ButtonTag.GIVE_CLAN_LEADER_TO_USER, "Give "+member.getName()+" leader role")
                                             )
                                     );
                                 } else {
@@ -284,7 +284,7 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
 
             response.setContent(clanRole.getMentionTag()).addComponents(
                     ActionRow.of(
-                            Button.primary("give-leader-select", "Give leader role to..."),
+                            Button.primary(ButtonTag.GIVE_CLAN_LEADER_SELECT, "Give leader role to..."),
                             Button.danger(ButtonTag.DISBAND_CLAN, "Disband")
                     )
             );

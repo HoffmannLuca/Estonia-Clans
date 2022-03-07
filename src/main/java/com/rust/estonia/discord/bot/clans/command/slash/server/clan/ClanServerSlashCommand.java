@@ -148,7 +148,7 @@ public class ClanServerSlashCommand implements ServerSlashCommand {
 
                 response.setContent(clanRole.getMentionTag()).addComponents(
                         ActionRow.of(
-                                org.javacord.api.entity.message.component.Button.primary("give-leader-select", "Give leader role to..."),
+                                Button.primary(ButtonTag.GIVE_CLAN_LEADER_SELECT, "Give leader role to..."),
                                 Button.danger(ButtonTag.DISBAND_CLAN, "Disband")
                         )
                 );

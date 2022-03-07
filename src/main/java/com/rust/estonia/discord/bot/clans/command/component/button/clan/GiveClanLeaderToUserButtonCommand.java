@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 
 @Component
-public class DisbandClanButtonCommand implements ButtonComponentCommand {
+public class GiveClanLeaderToUserButtonCommand implements ButtonComponentCommand {
 
     @Autowired
     private DiscordCoreUtil discordCoreUtil;
@@ -32,7 +32,7 @@ public class DisbandClanButtonCommand implements ButtonComponentCommand {
 
     @Override
     public String getName() {
-        return ButtonTag.DISBAND_CLAN;
+        return ButtonTag.GIVE_CLAN_LEADER_TO_USER;
     }
 
     @Override
@@ -56,23 +56,40 @@ public class DisbandClanButtonCommand implements ButtonComponentCommand {
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
-                .setTitle("Clan disband error!")
+                .setTitle("Give leader role error!")
                 .setDescription("something went wrong..");
 
         if(interaction.getServer().isPresent()) {
             Server server = interaction.getServer().get();
             String[] mentionedTagArray = message.getContent().split(" ");
-            if(mentionedTagArray.length>0){
+
+            if(mentionedTagArray.length>1){
                 long roleId = discordCoreUtil.getIdFromMentionedTag(mentionedTagArray[0]);
+                long userId = discordCoreUtil.getIdFromMentionedTag(mentionedTagArray[1]);
+
                 if(server.getRoleById(roleId).isPresent()) {
                     Role clanRole = server.getRoleById(roleId).get();
+
                     if (clanService.isClanRole(server, clanRole)) {
 
-                        String clanName = clanRole.getName();
-                        clanService.deleteClan(server, clanRole);
-                        responseEmbedBuilder.setColor(Color.GREEN)
-                                .setTitle("Clan disband success!")
-                                .setDescription("**" + clanName + "** got deleted!");
+                        if(server.getMemberById(userId).isPresent()) {
+                            User newLeader = server.getMemberById(userId).get();
+
+                            if(clanRole.hasUser(newLeader)) {
+
+                                if (clanService.setNewClanLeader(server, clanRole, newLeader)) {
+                                    responseEmbedBuilder.setColor(Color.GREEN)
+                                            .setTitle("Give leader role success!")
+                                            .setDescription(newLeader.getMentionTag() + " is now the new leader of " + clanRole.getMentionTag());
+                                } else {
+                                    responseEmbedBuilder.setDescription("setNewClanLeader() failed!!");
+                                }
+                            } else {
+                                responseEmbedBuilder.setDescription(newLeader.getMentionTag()+" is not a member of your clan!");
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription("user is not available!");
+                        }
                     } else {
                         responseEmbedBuilder.setDescription("role is not a clan!");
                     }
@@ -80,12 +97,12 @@ public class DisbandClanButtonCommand implements ButtonComponentCommand {
                     responseEmbedBuilder.setDescription("role not available!");
                 }
             } else {
-                responseEmbedBuilder.setDescription("no clan role available!");
+                responseEmbedBuilder.setDescription("mentioned tags missing");
             }
         } else {
             responseEmbedBuilder.setDescription("No server available!");
         }
 
-        messageUpdater.addEmbed(responseEmbedBuilder).setContent(" ").update();
+        messageUpdater.addEmbed(responseEmbedBuilder).setContent("").update();
     }
 }

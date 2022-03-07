@@ -8,6 +8,7 @@ import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.channel.VoiceChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
+import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.ApplicationCommandPermissionType;
 import org.javacord.api.interaction.ApplicationCommandPermissions;
 import org.slf4j.Logger;
@@ -183,6 +184,16 @@ public class SetupService {
         return false;
     }
 
+    public boolean roleHasUserByRoleTag(Server server, User user, String roleTag){
+
+        if(server!=null) {
+            Role role = getServerRoleByRoleTag(server, roleTag);
+            if (role != null) {
+                return role.hasUser(user);
+            }
+        }
+        return false;
+    }
     public HashMap<String, Long> getServerRoleIdMap(Server server) {
 
         Setup setup = getSetup(server);

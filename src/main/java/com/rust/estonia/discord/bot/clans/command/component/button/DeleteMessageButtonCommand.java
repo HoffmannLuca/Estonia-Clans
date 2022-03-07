@@ -24,23 +24,11 @@ public class DeleteMessageButtonCommand implements ButtonComponentCommand {
     @Override
     public boolean hasPermission(Server server, User user) {
 
-        if(server!=null){
-            Role adminRole = setupService.getServerRoleByRoleTag(server, RoleTag.ADMIN_ROLE);
-            Role moderatorRole = setupService.getServerRoleByRoleTag(server, RoleTag.MODERATOR_ROLE);
-
-            if(server.isOwner(user)){
-                return true;
-            }
-            if(adminRole!=null){
-                if(adminRole.hasUser(user)){
-                    return true;
-                }
-            }
-            if(moderatorRole!=null){
-                if(moderatorRole.hasUser(user)){
-                    return true;
-                }
-            }
+        if(setupService.roleHasUserByRoleTag(server, user, RoleTag.ADMIN_ROLE)){
+            return true;
+        }
+        if(setupService.roleHasUserByRoleTag(server, user, RoleTag.MODERATOR_ROLE)){
+            return true;
         }
 
         return false;

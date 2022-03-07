@@ -253,7 +253,7 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                     String clanCategoryTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase();
                     responseEmbedBuilder.setColor(Color.GREEN)
                             .setTitle("Clan promote success!")
-                            .setDescription(clanRole.getMentionTag()+" clan was promoted to "+ clanCategoryTag);
+                            .setDescription(clanRole.getMentionTag()+" clan was promoted to **"+ clanCategoryTag+"**");
                 } else {
                     responseEmbedBuilder.setDescription(clanRole.getMentionTag()+" can't be promoted because it already has the highest rank");
                 }
@@ -293,7 +293,7 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                     String clanCategoryTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase();
                     responseEmbedBuilder.setColor(Color.GREEN)
                             .setTitle("Clan promote success!")
-                            .setDescription(clanRole.getMentionTag()+" clan was demoted to "+ clanCategoryTag);
+                            .setDescription(clanRole.getMentionTag()+" clan was demoted to **"+ clanCategoryTag+"**");
                 } else {
                     responseEmbedBuilder.setDescription(clanRole.getMentionTag()+" can't be demoted because it already has the lowes rank");
                 }

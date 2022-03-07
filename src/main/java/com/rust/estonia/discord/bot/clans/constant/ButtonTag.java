@@ -11,4 +11,6 @@ public class ButtonTag {
 
     //ClanTags
     public static final String DISBAND_CLAN = "disband-clan";
+    public static final String GIVE_CLAN_LEADER_TO_USER = "give-leader-to-user";
+    public static final String GIVE_CLAN_LEADER_SELECT = "give-leader-select";
 }
