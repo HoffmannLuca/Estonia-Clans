@@ -1,6 +1,7 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server.clan;
 
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
+import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
 import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
@@ -332,7 +333,7 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
                 response.setContent(clanRole.getMentionTag()).addComponents(
                         ActionRow.of(
-                                Button.danger("disband-clan", "Disband")
+                                Button.danger(ButtonTag.DISBAND_CLAN, "Disband")
                         )
                 );
             } else {

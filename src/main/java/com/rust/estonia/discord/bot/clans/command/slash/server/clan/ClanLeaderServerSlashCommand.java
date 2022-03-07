@@ -180,7 +180,7 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                                             .setTitle("User promote warning!")
                                             .setDescription("Are you sure you want to promote " + member.getMentionTag() + " to " + leaderRole.getMentionTag() + " ? otherwise dismiss this message");
 
-                                    response.setContent(clanRole.getMentionTag()+member.getMentionTag()).addComponents(
+                                    response.setContent(clanRole.getMentionTag()+" "+member.getMentionTag()).addComponents(
                                             ActionRow.of(
                                                     Button.primary("give-leader-to-user", "Give "+member.getName()+" leader role")
                                             )
@@ -285,7 +285,7 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
             response.setContent(clanRole.getMentionTag()).addComponents(
                     ActionRow.of(
                             Button.primary("give-leader-select", "Give leader role to..."),
-                            Button.danger("disband-clan", "Disband")
+                            Button.danger(ButtonTag.DISBAND_CLAN, "Disband")
                     )
             );
 
