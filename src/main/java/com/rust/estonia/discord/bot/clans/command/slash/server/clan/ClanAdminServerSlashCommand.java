@@ -7,12 +7,15 @@ import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.component.ActionRow;
+import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 import org.javacord.api.interaction.callback.InteractionCallbackDataFlag;
+import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -122,6 +125,8 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
     private void createClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
 
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
+
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Clan create error!")
@@ -173,14 +178,13 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                 responseEmbedBuilder.setDescription(clanLeader.getMentionTag() + " is a bot. you can only select real users");
             }
         }
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
 
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void renameClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -217,13 +221,12 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void promoteClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -258,13 +261,12 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void demoteClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -299,13 +301,12 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void disbandClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -325,20 +326,20 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
         if (clanRole != null) {
             if(clanService.isClanRole(server, clanRole)){
 
-                String clanName = clanRole.getName();
-                clanService.deleteClan(server, clanRole);
+                responseEmbedBuilder.setColor(Color.YELLOW)
+                        .setTitle("Clan disband warning!")
+                        .setDescription("Are you sure you want to disband the clan"+clanRole.getMentionTag()+" ?");
 
-                responseEmbedBuilder.setColor(Color.GREEN)
-                        .setTitle("Clan disband success!")
-                        .setDescription("**"+clanName + "** clan got deleted");
+                response.setContent(clanRole.getMentionTag()).addComponents(
+                        ActionRow.of(
+                                Button.danger("disband-clan", "Disband")
+                        )
+                );
             } else {
                 responseEmbedBuilder.setDescription(clanRole.getMentionTag() + " is not a clan");
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 }

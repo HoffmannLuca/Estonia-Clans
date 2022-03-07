@@ -13,6 +13,7 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 import org.javacord.api.interaction.callback.InteractionCallbackDataFlag;
+import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -89,6 +90,8 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
 
     private void inviteUser(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
 
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
+
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Clan member invite error!")
@@ -131,13 +134,12 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void kickUser(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -159,13 +161,30 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
                 Role clanRole = clanService.getClanRoleByMember(server, user);
                 if (clanRole != null) {
                     if (clanRole.hasUser(kickMember)) {
+                        Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+                        Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
+                        if(leaderRole!= null){
+                            if(officerRole!=null){
+                                if(!leaderRole.hasUser(kickMember)){
+                                    if(!officerRole.hasUser(kickMember)){
 
-                        clanRole.removeUser(kickMember);
+                                        clanRole.removeUser(kickMember);
 
-                        responseEmbedBuilder.setColor(Color.GREEN)
-                                .setTitle("Clan member kick success!")
-                                .setDescription(kickMember.getMentionTag() + " is no longer a member of your clan");
-
+                                        responseEmbedBuilder.setColor(Color.GREEN)
+                                                .setTitle("Clan member kick success!")
+                                                .setDescription(kickMember.getMentionTag() + " is no longer a member of your clan");
+                                    } else {
+                                        responseEmbedBuilder.setDescription("You cant kick members with the "+officerRole.getMentionTag()+" role");
+                                    }
+                                } else {
+                                    responseEmbedBuilder.setDescription("You cant kick members with the "+leaderRole.getMentionTag()+" role");
+                                }
+                            } else {
+                                responseEmbedBuilder.setDescription("No role was setup for the role tag: officer");
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription("No role was setup for the role tag: leader");
+                        }
                     } else {
                         responseEmbedBuilder.setDescription(kickMember.getMentionTag() + " is not a member of your clan");
                     }
@@ -177,10 +196,6 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 }

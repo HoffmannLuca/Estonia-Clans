@@ -7,12 +7,15 @@ import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.component.ActionRow;
+import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 import org.javacord.api.interaction.callback.InteractionCallbackDataFlag;
+import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -77,6 +80,8 @@ public class ClanServerSlashCommand implements ServerSlashCommand {
 
     private void showClanInfo(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
 
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
+
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Clan info error!")
@@ -102,13 +107,12 @@ public class ClanServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void leaveClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -137,17 +141,21 @@ public class ClanServerSlashCommand implements ServerSlashCommand {
                     responseEmbedBuilder.setDescription("You are not in a clan");
                 }
             } else {
-                //TODO add button (give leader to) & (disband) with confirmation and member select menu
+
                 responseEmbedBuilder.setTitle("Clan leave warning!").setColor(Color.YELLOW)
                         .setDescription("You are the leader of your clan! you have to give leader role to someone else in your clan or disband clan");
+
+                response.setContent(clanRole.getMentionTag()).addComponents(
+                        ActionRow.of(
+                                org.javacord.api.entity.message.component.Button.primary("give-leader-select", "Give leader role to..."),
+                                Button.danger("disband-clan", "Disband")
+                        )
+                );
             }
         } else {
             responseEmbedBuilder.setDescription("You are not in a clan");
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 }

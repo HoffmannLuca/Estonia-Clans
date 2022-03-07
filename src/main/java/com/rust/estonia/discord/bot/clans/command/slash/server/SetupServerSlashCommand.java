@@ -14,6 +14,7 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 import org.javacord.api.interaction.callback.InteractionCallbackDataFlag;
+import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -146,6 +147,8 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
     private void showSetupInfo(SlashCommandInteraction interaction, Server server){
 
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
+
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setTitle("__Setup Info__")
                 .setAuthor(interaction.getApi().getYourself());
@@ -182,13 +185,12 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void setRole(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments){
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -216,14 +218,13 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
         commandPermissionUtil.updateServerSlashCommandPermissions(server);
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
 
     private void setChannel(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments, String secondOption) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -282,13 +283,12 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void setCategory(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments){
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -321,9 +321,6 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 }

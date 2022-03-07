@@ -30,7 +30,11 @@ public class DiscordCoreUtil {
     public final PermissionType[] PERMISSION_VIEW_SEND = new PermissionType[]{
             PermissionType.READ_MESSAGES,
             PermissionType.READ_MESSAGE_HISTORY,
-            PermissionType.SEND_MESSAGES
+            PermissionType.SEND_MESSAGES,
+            PermissionType.ATTACH_FILE,
+            PermissionType.EMBED_LINKS,
+            PermissionType.ADD_REACTIONS,
+            PermissionType.USE_APPLICATION_COMMANDS
     };
     public final PermissionType[] PERMISSION_VIEW_CONNECT = new PermissionType[]{
             PermissionType.READ_MESSAGES,

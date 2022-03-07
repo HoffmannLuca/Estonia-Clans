@@ -1,18 +1,23 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server.clan;
 
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
+import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
 import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.component.ActionRow;
+import org.javacord.api.entity.message.component.Button;
+import org.javacord.api.entity.message.component.SelectMenu;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 import org.javacord.api.interaction.callback.InteractionCallbackDataFlag;
+import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -104,6 +109,8 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
 
     private void renameClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
 
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
+
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
                 .setTitle("Clan rename error!")
@@ -135,14 +142,12 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void promoteUser(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -170,10 +175,16 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                             if(officerRole.hasUser(member)){
                                 Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
                                 if(leaderRole!=null) {
-                                    //TODO add button to confirm
+
                                     responseEmbedBuilder.setColor(Color.YELLOW)
                                             .setTitle("User promote warning!")
-                                            .setDescription("Are you sure you want to promote " + member.getMentionTag() + " to " + leaderRole.getMentionTag() + " ?");
+                                            .setDescription("Are you sure you want to promote " + member.getMentionTag() + " to " + leaderRole.getMentionTag() + " ? otherwise dismiss this message");
+
+                                    response.setContent(clanRole.getMentionTag()+member.getMentionTag()).addComponents(
+                                            ActionRow.of(
+                                                    Button.primary("give-leader-to-user", "Give "+member.getName()+" leader role")
+                                            )
+                                    );
                                 } else {
                                     responseEmbedBuilder.setDescription("No Role has been setup for the role tag **" + RoleTag.CLAN_LEADER_ROLE.toUpperCase() + "**");
                                 }
@@ -198,13 +209,12 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void demoteUser(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -253,14 +263,12 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
             }
         }
 
-
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 
     private void disbandClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
         EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.RED)
@@ -270,29 +278,21 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
         Role clanRole = clanService.getClanRoleByLeader(server, user);
         if(clanRole!=null) {
 
-            Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
-            Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
-            if(leaderRole!=null){
-                leaderRole.removeUser(user);
-            }
-            if(officerRole!=null){
-                officerRole.removeUser(user);
-            }
+            responseEmbedBuilder.setColor(Color.YELLOW)
+                    .setTitle("Clan disband warning!")
+                    .setDescription("Are you sure you want to disband your clan? instead you could give someone else the leader role");
 
-            String clanName = clanRole.getName();
-            clanService.deleteClan(server, clanRole);
-
-            responseEmbedBuilder.setColor(Color.GREEN)
-                    .setTitle("Clan disband success!")
-                    .setDescription("**"+clanName + "** clan got deleted");
+            response.setContent(clanRole.getMentionTag()).addComponents(
+                    ActionRow.of(
+                            Button.primary("give-leader-select", "Give leader role to..."),
+                            Button.danger("disband-clan", "Disband")
+                    )
+            );
 
         } else {
             responseEmbedBuilder.setDescription("Your clan role does not exist");
         }
 
-        interaction.createImmediateResponder()
-                .addEmbed(responseEmbedBuilder)
-                .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
-                .respond();
+        response.addEmbed(responseEmbedBuilder).respond();
     }
 }
