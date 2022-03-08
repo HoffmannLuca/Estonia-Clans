@@ -1,16 +1,24 @@
 package com.rust.estonia.discord.bot.clans;
 
+import com.rust.estonia.discord.bot.clans.command.slash.global.GlobalSlashCommand;
+import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
 import com.rust.estonia.discord.bot.clans.util.ApplicationCommandUtil;
 import com.rust.estonia.discord.bot.clans.listener.*;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.intent.Intent;
+import org.javacord.api.entity.server.Server;
+import org.javacord.api.interaction.ServerApplicationCommandPermissionsBuilder;
+import org.javacord.api.interaction.SlashCommandBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @SpringBootApplication
@@ -38,6 +46,12 @@ public class EstoniaClansApplication {
 	@Autowired
 	private ApplicationCommandUtil applicationCommandUtil;
 
+	@Autowired
+	private List<GlobalSlashCommand> globalSlashCommands;
+
+	@Autowired
+	private List<ServerSlashCommand> serverSlashCommands;
+
 	@Bean
 	@ConfigurationProperties(value = "discord-api")
 	public DiscordApi discordApi(){
@@ -64,8 +78,35 @@ public class EstoniaClansApplication {
 				.login()
 				.join();
 
-		applicationCommandUtil.setSlashCommands(api);
+		setSlashCommands(api);
 
 		return api;
 	}
+
+
+	public void setSlashCommands(DiscordApi api){
+
+		List<SlashCommandBuilder> globalCommandBuilder = new ArrayList<>();
+		for(GlobalSlashCommand command : globalSlashCommands){
+			globalCommandBuilder.add(command.getCommandBuilder());
+		}
+		api.bulkOverwriteGlobalApplicationCommands(globalCommandBuilder).join();
+
+		List<SlashCommandBuilder> serverCommandBuilder = new ArrayList<>();
+		for(ServerSlashCommand command : serverSlashCommands){
+			serverCommandBuilder.add(command.getCommandBuilder());
+		}
+		for(Server server : api.getServers()){
+
+			api.bulkOverwriteServerApplicationCommands(server, serverCommandBuilder);
+
+			List<ServerApplicationCommandPermissionsBuilder> serverPermissionBuilder = new ArrayList<>();
+			for(ServerSlashCommand command : serverSlashCommands){
+				serverPermissionBuilder.add(command.getPermissionBuilder(server));
+			}
+
+			api.batchUpdateApplicationCommandPermissions(server, serverPermissionBuilder);
+		}
+	}
+
 }
