@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 @Component
 public class DiscordCoreUtil {
 
-    private Logger logger = LoggerFactory.getLogger(DiscordCoreUtil.class);
+    private final Logger logger = LoggerFactory.getLogger(DiscordCoreUtil.class);
 
 
 // - - PERMISSIONS - -
