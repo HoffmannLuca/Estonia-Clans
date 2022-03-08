@@ -57,7 +57,7 @@ public class EstoniaClansApplication {
 	public DiscordApi discordApi(){
 		DiscordApi api = new DiscordApiBuilder()
 
-				.setToken("TOKEN")
+				.setToken(env.getProperty("BOT_TOKEN"))
 				.setIntents(
 						Intent.GUILDS,
 						Intent.GUILD_MEMBERS,
@@ -82,7 +82,6 @@ public class EstoniaClansApplication {
 
 		return api;
 	}
-
 
 	public void setSlashCommands(DiscordApi api){
 
