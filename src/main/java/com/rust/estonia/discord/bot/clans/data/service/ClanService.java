@@ -8,7 +8,9 @@ import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerTextChannelBuilder;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.message.embed.EmbedFooter;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -18,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -212,7 +212,39 @@ public class ClanService {
             }
         }
 
+        clanInfoEmbedBuilder.setFooter("Clan-ID["+clanRole.getId()+"]");
         return clanInfoEmbedBuilder;
+    }
+
+    public Role getClanRoleFromEmbedFooter(Server server, Embed embed){
+
+        if(server.getRoleById(getClanRoleIdFromEmbedFooter(embed)).isPresent()){
+            Role role = server.getRoleById(getClanRoleIdFromEmbedFooter(embed)).get();
+            if(isClanRole(server, role)){
+                return role;
+            }
+        }
+        return null;
+    }
+
+    public long getClanRoleIdFromEmbedFooter(Embed embed){
+
+        if(embed!=null) {
+
+            if(embed.getFooter().isPresent()){
+                EmbedFooter footer = embed.getFooter().get();
+
+                if(footer.getText().isPresent()) {
+                    String text = footer.getText().get();
+                    String clanId = text.replace("Clan-ID[", "").replace("]", "");
+
+                    if (!clanId.equals("")) {
+                        return Long.parseLong(clanId);
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     public int getClanRank(Server server, Role clanRole) {

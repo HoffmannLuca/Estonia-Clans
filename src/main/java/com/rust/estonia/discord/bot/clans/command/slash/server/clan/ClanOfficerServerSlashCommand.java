@@ -124,9 +124,6 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
                                 EmbedBuilder inviteEmbed = clanService.getClanInfoEmbedBuilder(server, clanRole);
                                 inviteEmbed.setTitle("You got invited to __"+clanRole.getName()+"__ clan");
 
-                                //TODO remove later
-                                clanRole.addUser(newMember);
-
                                 new MessageBuilder()
                                         .setContent(newMember.getMentionTag())
                                         .addEmbed(inviteEmbed)

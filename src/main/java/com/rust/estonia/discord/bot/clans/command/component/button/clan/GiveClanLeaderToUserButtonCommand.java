@@ -103,6 +103,6 @@ public class GiveClanLeaderToUserButtonCommand implements ButtonComponentCommand
             responseEmbedBuilder.setDescription("No server available!");
         }
 
-        messageUpdater.addEmbed(responseEmbedBuilder).setContent("").update();
+        messageUpdater.addEmbed(responseEmbedBuilder).setContent(" ").update();
     }
 }
