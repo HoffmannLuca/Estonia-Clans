@@ -3,9 +3,9 @@ name: Java Spring CI with Gradle to Docker Image
 
 on:
   push:
-    branches: [ features/005-github-workflow-setup ]
+    branches: [ master ]
   pull_request:
-    branches: [ features/005-github-workflow-setup ]
+    branches: [ master ]
 
 jobs:
   build:
