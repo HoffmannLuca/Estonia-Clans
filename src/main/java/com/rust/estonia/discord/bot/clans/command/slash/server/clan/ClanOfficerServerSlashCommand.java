@@ -114,36 +114,41 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
 
                 if (clanRole != null) {
 
-                    if (!clanRole.hasUser(newMember)) {
+                    if(clanRole.getUsers().size()<25) {
 
-                        if (!clanService.isClanMember(server, newMember)) {
-                            TextChannel clanInvites = setupService.getServerTextChannelByChannelTag(server, TextChannelTag.CLAN_INVITE_CHANNEL, true);
+                        if (!clanRole.hasUser(newMember)) {
 
-                            if(clanInvites!=null){
+                            if (!clanService.isClanMember(server, newMember)) {
+                                TextChannel clanInvites = setupService.getServerTextChannelByChannelTag(server, TextChannelTag.CLAN_INVITE_CHANNEL, true);
 
-                                EmbedBuilder inviteEmbed = clanService.getClanInfoEmbedBuilder(server, clanRole);
-                                inviteEmbed.setTitle("You got invited to __"+clanRole.getName()+"__ clan");
+                                if (clanInvites != null) {
 
-                                new MessageBuilder()
-                                        .setContent(newMember.getMentionTag())
-                                        .addEmbed(inviteEmbed)
-                                        .addActionRow(
-                                                Button.success(ButtonTag.JOIN_CLAN, "Join clan"),
-                                                Button.danger(ButtonTag.DECLINE_CLAN, "Decline")
-                                        )
-                                        .send(clanInvites);
+                                    EmbedBuilder inviteEmbed = clanService.getClanInfoEmbedBuilder(server, clanRole);
+                                    inviteEmbed.setTitle("You got invited to __" + clanRole.getName() + "__ clan");
 
-                                responseEmbedBuilder.setColor(Color.GREEN)
-                                        .setTitle("Clan member invite success!")
-                                        .setDescription(newMember.getMentionTag() + " received an invitation in the **"+TextChannelTag.CLAN_INVITE_CHANNEL+"** channel");
+                                    new MessageBuilder()
+                                            .setContent(newMember.getMentionTag())
+                                            .addEmbed(inviteEmbed)
+                                            .addActionRow(
+                                                    Button.success(ButtonTag.JOIN_CLAN, "Join clan"),
+                                                    Button.danger(ButtonTag.DECLINE_CLAN, "Decline")
+                                            )
+                                            .send(clanInvites);
+
+                                    responseEmbedBuilder.setColor(Color.GREEN)
+                                            .setTitle("Clan member invite success!")
+                                            .setDescription(newMember.getMentionTag() + " received an invitation in the **" + TextChannelTag.CLAN_INVITE_CHANNEL + "** channel");
+                                } else {
+                                    responseEmbedBuilder.setDescription("No clan invite channel available");
+                                }
                             } else {
-                                responseEmbedBuilder.setDescription("No clan invite channel available");
+                                responseEmbedBuilder.setDescription(newMember.getMentionTag() + " is already a member of another clan");
                             }
                         } else {
-                            responseEmbedBuilder.setDescription(newMember.getMentionTag() + " is already a member of another clan");
+                            responseEmbedBuilder.setDescription(newMember.getMentionTag() + " is already a member of your clan");
                         }
                     } else {
-                        responseEmbedBuilder.setDescription(newMember.getMentionTag() + " is already a member of your clan");
+                        responseEmbedBuilder.setDescription("clan is already full! you can only have 25 members max");
                     }
                 } else {
                     responseEmbedBuilder.setDescription("Your clan role does not exist");

@@ -81,17 +81,21 @@ public class GiveClanLeaderSelectButtonCommand implements ButtonComponentCommand
 
                         List<SelectMenuOption> userOptions= new ArrayList<>();
 
+                        int count = 0;
                         for (User member : clanRole.getUsers()){
                             if(member.getId()!=user.getId()) {
                                 String nickname = "";
                                 if(member.getNickname(server).isPresent()){
                                     nickname = member.getNickname(server).get();
                                 }
-                                userOptions.add(new SelectMenuOptionBuilder()
-                                        .setLabel(member.getName())
-                                        .setValue(member.getIdAsString())
-                                        .setDescription(nickname)
-                                        .build());
+                                if(count<25) {
+                                    userOptions.add(new SelectMenuOptionBuilder()
+                                            .setLabel(member.getName())
+                                            .setValue(member.getIdAsString())
+                                            .setDescription(nickname)
+                                            .build());
+                                    count++;
+                                }
                             }
                         }
                         if(!userOptions.isEmpty()) {

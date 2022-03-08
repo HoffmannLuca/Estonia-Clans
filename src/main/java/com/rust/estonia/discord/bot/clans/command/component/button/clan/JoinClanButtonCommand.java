@@ -52,18 +52,23 @@ public class JoinClanButtonCommand implements ButtonComponentCommand {
 
                         if (clanRole != null) {
 
-                            clanRole.addUser(user);
-                            message.delete();
+                            if(clanRole.getUsers().size()<25) {
 
-                            responseEmbedBuilder.setColor(Color.GREEN).setTitle("Join clan success!")
-                                    .setDescription("You are now a member of "+clanRole.getMentionTag());
+                                clanRole.addUser(user);
 
+                                responseEmbedBuilder.setColor(Color.GREEN).setTitle("Join clan success!")
+                                        .setDescription("You are now a member of " + clanRole.getMentionTag());
+                            } else {
+                                responseEmbedBuilder.setDescription("this clan is already full");
+                            }
                         } else {
                             responseEmbedBuilder.setDescription("clan role not available");
                         }
                     } else {
                         responseEmbedBuilder.setDescription("no embed available");
                     }
+                    message.delete();
+
                 } else {
                     responseEmbedBuilder.setDescription("This invite is not for you");
                 }

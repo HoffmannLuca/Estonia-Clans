@@ -8,6 +8,7 @@ import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -24,6 +25,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ClanAdminServerSlashCommand implements ServerSlashCommand {
@@ -150,17 +152,25 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
         }
 
         if(clanLeader!=null && !clanName.equals("")) {
+
             if(!clanLeader.isBot()) {
+
                 if (clanService.getClanRoleByLeader(server, clanLeader) == null) {
+
                     if (!clanService.isClanMember(server, clanLeader)) {
+
                         if (setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE) != null) {
                             Role clanLeaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
                             Role clanRole = clanService.createClan(server, clanLeader, clanName);
                             clanLeaderRole.addUser(clanLeader);
                             clanRole.addUser(clanLeader);
                             TextChannel clanTextChat = clanService.getClanTextChat(server, clanRole);
-                            if (clanTextChat != null) {
-                                clanTextChat.sendMessage(clanRole.getMentionTag());
+
+                            if (clanTextChat != null && clanService.getClanInfoEmbedBuilder(server, clanRole)!=null) {
+                                new MessageBuilder().setContent(clanRole.getMentionTag())
+                                        .addEmbed(clanService.getClanInfoEmbedBuilder(server, clanRole)
+                                                .setTitle("Here is your new clan __"+clanRole.getName()+"__")
+                                        ).send(clanTextChat);
                             }
 
                             responseEmbedBuilder.setColor(Color.GREEN)
@@ -250,10 +260,17 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
                 if(clanService.promoteClan(server, clanRole)){
 
-                    String clanCategoryTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase();
+                    String clanRankTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase().replace("-", " ");
+
+                    //remove `s` (last character)
+                    clanRankTag = Optional.of(clanRankTag)
+                            .filter(s -> !s.isEmpty())
+                            .map(s -> s.substring(0, s.length() - 1))
+                            .orElse(clanRankTag);
+
                     responseEmbedBuilder.setColor(Color.GREEN)
                             .setTitle("Clan promote success!")
-                            .setDescription(clanRole.getMentionTag()+" clan was promoted to **"+ clanCategoryTag+"**");
+                            .setDescription(clanRole.getMentionTag()+" clan was promoted to **"+ clanRankTag+"**");
                 } else {
                     responseEmbedBuilder.setDescription(clanRole.getMentionTag()+" can't be promoted because it already has the highest rank");
                 }
@@ -290,10 +307,18 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
                 if(clanService.demoteClan(server, clanRole)){
 
-                    String clanCategoryTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase();
+                    String clanRankTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase().replace("-", " ");
+
+                    //remove `s` (last character)
+                    clanRankTag = Optional.of(clanRankTag)
+                            .filter(s -> !s.isEmpty())
+                            .map(s -> s.substring(0, s.length() - 1))
+                            .orElse(clanRankTag);
+
+
                     responseEmbedBuilder.setColor(Color.GREEN)
                             .setTitle("Clan promote success!")
-                            .setDescription(clanRole.getMentionTag()+" clan was demoted to **"+ clanCategoryTag+"**");
+                            .setDescription(clanRole.getMentionTag()+" clan was demoted to **"+ clanRankTag+"**");
                 } else {
                     responseEmbedBuilder.setDescription(clanRole.getMentionTag()+" can't be demoted because it already has the lowes rank");
                 }

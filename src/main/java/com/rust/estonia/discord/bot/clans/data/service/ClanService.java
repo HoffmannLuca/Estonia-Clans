@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -179,6 +180,13 @@ public class ClanService {
                     .toUpperCase().replace("-", " ");
 
             if(!clanRankTag.equals("")){
+
+                //remove `s` (last character)
+                clanRankTag = Optional.of(clanRankTag)
+                        .filter(s -> !s.isEmpty())
+                        .map(s -> s.substring(0, s.length() - 1))
+                        .orElse(clanRankTag);
+
                 clanInfoEmbedBuilder.addField("Clan rank", "**"+clanRankTag+"**", true);
             }
             clanInfoEmbedBuilder.addField("Clan role", clanRole.getMentionTag(), true);
@@ -227,7 +235,7 @@ public class ClanService {
         return null;
     }
 
-    public long getClanRoleIdFromEmbedFooter(Embed embed){
+    private long getClanRoleIdFromEmbedFooter(Embed embed){
 
         if(embed!=null) {
 
