@@ -1,12 +1,12 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server.clan;
 
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
-import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
-import com.rust.estonia.discord.bot.clans.constant.RoleTag;
-import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
@@ -108,18 +108,40 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
         }
 
         if(newMember!=null) {
+
             if(!newMember.isBot()) {
                 Role clanRole = clanService.getClanRoleByMember(server, user);
+
                 if (clanRole != null) {
+
                     if (!clanRole.hasUser(newMember)) {
+
                         if (!clanService.isClanMember(server, newMember)) {
+                            TextChannel clanInvites = setupService.getServerTextChannelByChannelTag(server, TextChannelTag.CLAN_INVITE_CHANNEL, true);
 
-                            //TODO send invite into invite channel and remove addUser() below
-                            clanRole.addUser(newMember);
+                            if(clanInvites!=null){
 
-                            responseEmbedBuilder.setColor(Color.GREEN)
-                                    .setTitle("Clan member invite success!")
-                                    .setDescription(newMember.getMentionTag() + " is now a member of your clan");
+                                EmbedBuilder inviteEmbed = clanService.getClanInfoEmbedBuilder(server, clanRole);
+                                inviteEmbed.setTitle("You got invited to __"+clanRole.getName()+"__ clan");
+
+                                //TODO remove later
+                                clanRole.addUser(newMember);
+
+                                new MessageBuilder()
+                                        .setContent(newMember.getMentionTag())
+                                        .addEmbed(inviteEmbed)
+                                        .addActionRow(
+                                                Button.success(ButtonTag.JOIN_CLAN, "Join clan"),
+                                                Button.danger(ButtonTag.DECLINE_CLAN, "Decline")
+                                        )
+                                        .send(clanInvites);
+
+                                responseEmbedBuilder.setColor(Color.GREEN)
+                                        .setTitle("Clan member invite success!")
+                                        .setDescription(newMember.getMentionTag() + " received an invitation in the **"+TextChannelTag.CLAN_INVITE_CHANNEL+"** channel");
+                            } else {
+                                responseEmbedBuilder.setDescription("No clan invite channel available");
+                            }
                         } else {
                             responseEmbedBuilder.setDescription(newMember.getMentionTag() + " is already a member of another clan");
                         }

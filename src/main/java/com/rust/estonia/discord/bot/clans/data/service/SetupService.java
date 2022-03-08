@@ -2,10 +2,7 @@ package com.rust.estonia.discord.bot.clans.data.service;
 
 import com.rust.estonia.discord.bot.clans.data.model.Setup;
 import com.rust.estonia.discord.bot.clans.data.repository.SetupRepository;
-import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.ChannelCategoryBuilder;
-import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.channel.VoiceChannel;
+import org.javacord.api.entity.channel.*;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -99,12 +96,38 @@ public class SetupService {
 
     public TextChannel getServerTextChannelByChannelTag(Server server, String channelTag){
 
+        return getServerTextChannelByChannelTag(server, channelTag, false, null);
+    }
+
+    public TextChannel getServerTextChannelByChannelTag(Server server, String channelTag, boolean createIfNotExist){
+
+        return getServerTextChannelByChannelTag(server, channelTag, createIfNotExist, null);
+    }
+
+    public TextChannel getServerTextChannelByChannelTag(Server server, String channelTag, boolean createIfNotExist, ChannelCategory category){
+
         Setup setup = getSetup(server);
         if(setup != null) {
             if(setup.getTextChannelIdMap().containsKey(channelTag)) {
                 long id = setup.getTextChannelIdMap().get(channelTag);
                 if (server.getTextChannelById(id).isPresent()) {
                     return server.getTextChannelById(id).get();
+                }
+            }
+            if(createIfNotExist){
+                try {
+                    ServerTextChannelBuilder builder = new ServerTextChannelBuilder(server)
+                            .setName(channelTag)
+                            .setAuditLogReason("Create "+channelTag.toUpperCase()+" text channel");
+
+                    if(category!=null){
+                        builder.setCategory(category);
+                    }
+                    TextChannel channel = builder.create().get();
+                    setServerTextChannelByChannelTag(server, channel, channelTag);
+                    return channel;
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.error(e.getMessage());
                 }
             }
         }

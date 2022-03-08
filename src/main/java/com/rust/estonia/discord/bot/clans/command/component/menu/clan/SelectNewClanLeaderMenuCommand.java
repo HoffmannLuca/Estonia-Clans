@@ -1,5 +1,6 @@
-package com.rust.estonia.discord.bot.clans.command.component.menu;
+package com.rust.estonia.discord.bot.clans.command.component.menu.clan;
 
+import com.rust.estonia.discord.bot.clans.command.component.menu.MenuComponentCommand;
 import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
 import com.rust.estonia.discord.bot.clans.constant.MenuTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;

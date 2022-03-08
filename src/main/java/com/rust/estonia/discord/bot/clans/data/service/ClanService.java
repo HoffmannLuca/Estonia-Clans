@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -166,8 +168,49 @@ public class ClanService {
 
         EmbedBuilder clanInfoEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.BLUE)
-                .setTitle("Clan info "+clanRole.getName())
-                .setDescription("here is information about this clan "+clanRole.getMentionTag());
+                .setTitle("Clan info __"+clanRole.getName()+"__")
+                .setDescription("");
+
+        if(server!=null){
+            Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+            Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
+
+            String clanRankTag = getClanCategoryTag(getClanRank(server, clanRole))
+                    .toUpperCase().replace("-", " ");
+
+            if(!clanRankTag.equals("")){
+                clanInfoEmbedBuilder.addField("Clan rank", "**"+clanRankTag+"**", true);
+            }
+            clanInfoEmbedBuilder.addField("Clan role", clanRole.getMentionTag(), true);
+            Clan clan = getClanByRole(server, clanRole);
+
+            if(server.getTextChannelById(clan.getClanTextChatId()).isPresent()){
+                clanInfoEmbedBuilder.addField("Clan chat", server.getTextChannelById(clan.getClanTextChatId()).get().getMentionTag(),true);
+            }
+
+            if(leaderRole!=null && officerRole!=null){
+                boolean clanLeaderIsSet=false;
+                StringBuilder officerInfo = new StringBuilder();
+                StringBuilder memberInfo = new StringBuilder();
+
+                for (User member : clanRole.getUsers()){
+                    if(!clanLeaderIsSet && leaderRole.hasUser(member)){
+                        clanInfoEmbedBuilder.addField("Leader", member.getName()+" "+member.getMentionTag());
+                        clanLeaderIsSet=true;
+                    } else if (officerRole.hasUser(member)){
+                        officerInfo.append(member.getName()).append(member.getMentionTag()).append("\n");
+                    } else {
+                        memberInfo.append(member.getName()).append(member.getMentionTag()).append("\n");
+                    }
+                }
+                if(!officerInfo.isEmpty()){
+                    clanInfoEmbedBuilder.addField("Officer", officerInfo.toString());
+                }
+                if(!memberInfo.isEmpty()){
+                    clanInfoEmbedBuilder.addField("Member", memberInfo.toString());
+                }
+            }
+        }
 
         return clanInfoEmbedBuilder;
     }
