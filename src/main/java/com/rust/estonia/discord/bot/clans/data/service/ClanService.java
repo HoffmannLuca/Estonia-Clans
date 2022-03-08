@@ -211,10 +211,10 @@ public class ClanService {
                         memberInfo.append(member.getName()).append(member.getMentionTag()).append("\n");
                     }
                 }
-                if(!officerInfo.isEmpty()){
+                if(!officerInfo.toString().equals("")){
                     clanInfoEmbedBuilder.addField("Officer", officerInfo.toString());
                 }
-                if(!memberInfo.isEmpty()){
+                if(!memberInfo.toString().equals("")){
                     clanInfoEmbedBuilder.addField("Member", memberInfo.toString());
                 }
             }
