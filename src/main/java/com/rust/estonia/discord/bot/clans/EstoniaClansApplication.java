@@ -33,9 +33,6 @@ public class EstoniaClansApplication {
 	private BotServerJoinListener botServerJoinListener;
 
 	@Autowired
-	private CommandListener commandListener;
-
-	@Autowired
 	private SlashCommandListener slashCommandListener;
 
 	@Autowired
@@ -72,7 +69,6 @@ public class EstoniaClansApplication {
 				)
 
 				.addServerJoinListener(botServerJoinListener)
-				.addMessageCreateListener(commandListener)
 				.addSlashCommandCreateListener(slashCommandListener)
 				.addMessageComponentCreateListener(componentListener)
 				.addServerChangeOwnerListener(newServerOwnerUpdateListener)
