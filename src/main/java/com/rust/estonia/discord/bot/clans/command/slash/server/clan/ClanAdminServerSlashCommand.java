@@ -1,12 +1,10 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server.clan;
 
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
-import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
-import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
-import com.rust.estonia.discord.bot.clans.constant.RoleTag;
-import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
+import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.ActionRow;
@@ -25,7 +23,6 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ClanAdminServerSlashCommand implements ServerSlashCommand {
@@ -35,6 +32,9 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private SetupService setupService;
+
+    @Autowired
+    private LogMessageUtil logMessageUtil;
 
     private final String FIRST_OPTION_CREATE = "create";
     private final String FIRST_OPTION_DISBAND = "disband";
@@ -173,6 +173,8 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                                         ).send(clanTextChat);
                             }
 
+                            logMessageUtil.sendLogMessage(server, user, clanRole, LogMessageTag.CLAN_CREATED);
+
                             responseEmbedBuilder.setColor(Color.GREEN)
                                     .setTitle("Clan create success!")
                                     .setDescription(clanRole.getMentionTag() + " clan was created and " + clanLeader.getMentionTag() + " was assigned as **clan leader**");
@@ -224,6 +226,8 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                 String oldClanName = clanRole.getName();
                 clanService.renameClan(server, clanRole, newClanName);
 
+                logMessageUtil.sendLogMessage(server, user, clanRole, LogMessageTag.CLAN_RENAMED);
+
                 responseEmbedBuilder.setColor(Color.GREEN)
                         .setTitle("Clan rename success!")
                         .setDescription(clanRole.getMentionTag() + " clan was renamed from **"+oldClanName+"** to **"+newClanName+"**");
@@ -260,13 +264,9 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
                 if(clanService.promoteClan(server, clanRole)){
 
-                    String clanRankTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase().replace("-", " ");
+                    String clanRankTag = clanService.getClanRankName(server, clanRole);
 
-                    //remove `s` (last character)
-                    clanRankTag = Optional.of(clanRankTag)
-                            .filter(s -> !s.isEmpty())
-                            .map(s -> s.substring(0, s.length() - 1))
-                            .orElse(clanRankTag);
+                    logMessageUtil.sendLogMessage(server, user, clanRole, LogMessageTag.CLAN_PROMOTED);
 
                     responseEmbedBuilder.setColor(Color.GREEN)
                             .setTitle("Clan promote success!")
@@ -307,14 +307,9 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
                 if(clanService.demoteClan(server, clanRole)){
 
-                    String clanRankTag = clanService.getClanCategoryTag(clanService.getClanRank(server, clanRole)).toUpperCase().replace("-", " ");
+                    String clanRankTag = clanService.getClanRankName(server, clanRole);
 
-                    //remove `s` (last character)
-                    clanRankTag = Optional.of(clanRankTag)
-                            .filter(s -> !s.isEmpty())
-                            .map(s -> s.substring(0, s.length() - 1))
-                            .orElse(clanRankTag);
-
+                    logMessageUtil.sendLogMessage(server, user, clanRole, LogMessageTag.CLAN_DEMOTED);
 
                     responseEmbedBuilder.setColor(Color.GREEN)
                             .setTitle("Clan promote success!")

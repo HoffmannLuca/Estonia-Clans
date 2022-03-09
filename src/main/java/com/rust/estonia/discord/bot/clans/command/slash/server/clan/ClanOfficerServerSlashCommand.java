@@ -4,6 +4,7 @@ import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashComman
 import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
+import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.Button;
@@ -30,6 +31,9 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private ClanService clanService;
+
+    @Autowired
+    private LogMessageUtil logMessageUtil;
 
     private final String FIRST_OPTION_INVITE = "invite";
     private final String FIRST_OPTION_KICK = "kick";
@@ -193,6 +197,8 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
                                     if(!officerRole.hasUser(kickMember)){
 
                                         clanRole.removeUser(kickMember);
+
+                                        logMessageUtil.sendLogMessage(server, kickMember, clanRole, LogMessageTag.MEMBER_KICKED);
 
                                         responseEmbedBuilder.setColor(Color.GREEN)
                                                 .setTitle("Clan member kick success!")

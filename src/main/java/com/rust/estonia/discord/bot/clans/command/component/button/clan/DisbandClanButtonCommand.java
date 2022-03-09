@@ -2,10 +2,12 @@ package com.rust.estonia.discord.bot.clans.command.component.button.clan;
 
 import com.rust.estonia.discord.bot.clans.command.component.button.ButtonComponentCommand;
 import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
+import com.rust.estonia.discord.bot.clans.constant.LogMessageTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
@@ -29,6 +31,9 @@ public class DisbandClanButtonCommand implements ButtonComponentCommand {
 
     @Autowired
     private ClanService clanService;
+
+    @Autowired
+    private LogMessageUtil logMessageUtil;
 
     @Override
     public String getName() {
@@ -68,8 +73,11 @@ public class DisbandClanButtonCommand implements ButtonComponentCommand {
                     Role clanRole = server.getRoleById(roleId).get();
                     if (clanService.isClanRole(server, clanRole)) {
 
+                        logMessageUtil.sendLogMessage(server, user, clanRole, LogMessageTag.CLAN_DISBAND);
+
                         String clanName = clanRole.getName();
                         clanService.deleteClan(server, clanRole);
+
                         responseEmbedBuilder.setColor(Color.GREEN)
                                 .setTitle("Clan disband success!")
                                 .setDescription("**" + clanName + "** got deleted!");

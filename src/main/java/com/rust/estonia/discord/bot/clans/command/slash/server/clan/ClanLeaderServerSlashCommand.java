@@ -1,12 +1,10 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server.clan;
 
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
-import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
-import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
-import com.rust.estonia.discord.bot.clans.constant.RoleTag;
-import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
+import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
@@ -33,6 +31,9 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private ClanService clanService;
+
+    @Autowired
+    private LogMessageUtil logMessageUtil;
 
     private final String FIRST_OPTION_RENAME = "rename";
     private final String FIRST_OPTION_PROMOTE = "promote";
@@ -132,6 +133,8 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                 String oldClanName = clanRole.getName();
                 clanService.renameClan(server, clanRole, newClanName);
 
+                logMessageUtil.sendLogMessage(server, user, clanRole, LogMessageTag.CLAN_RENAMED);
+
                 responseEmbedBuilder.setColor(Color.GREEN)
                         .setTitle("Clan rename success!")
                         .setDescription(clanRole.getMentionTag() + " clan was renamed from **" + oldClanName + "** to **" + newClanName + "**");
@@ -165,14 +168,20 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
         }
 
         if(member!=null) {
+
             if(!member.isBot()) {
                 Role clanRole = clanService.getClanRoleByLeader(server, user);
+
                 if (clanRole != null) {
+
                     if (clanRole.hasUser(member)) {
                         Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
+
                         if(officerRole!=null){
+
                             if(officerRole.hasUser(member)){
                                 Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+
                                 if(leaderRole!=null) {
 
                                     responseEmbedBuilder.setColor(Color.YELLOW)
@@ -189,6 +198,8 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                                 }
                             } else {
                                 officerRole.addUser(member);
+
+                                logMessageUtil.sendLogMessage(server, member, clanRole, LogMessageTag.MEMBER_PROMOTED_OFFICER);
 
                                 responseEmbedBuilder.setColor(Color.GREEN)
                                         .setTitle("User promote success!")
@@ -241,6 +252,8 @@ public class ClanLeaderServerSlashCommand implements ServerSlashCommand {
                             if(officerRole.hasUser(member)){
 
                                 officerRole.removeUser(member);
+
+                                logMessageUtil.sendLogMessage(server, member, clanRole, LogMessageTag.MEMBER_DEMOTED);
 
                                 responseEmbedBuilder.setColor(Color.GREEN)
                                         .setTitle("User demote success!")

@@ -2,8 +2,10 @@ package com.rust.estonia.discord.bot.clans.command.component.button.clan;
 
 import com.rust.estonia.discord.bot.clans.command.component.button.ButtonComponentCommand;
 import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
+import com.rust.estonia.discord.bot.clans.constant.LogMessageTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
@@ -25,6 +27,9 @@ public class JoinClanButtonCommand implements ButtonComponentCommand {
 
     @Autowired
     private ClanService clanService;
+
+    @Autowired
+    private LogMessageUtil logMessageUtil;
 
     @Override
     public String getName() {
@@ -55,6 +60,8 @@ public class JoinClanButtonCommand implements ButtonComponentCommand {
                             if(clanRole.getUsers().size()<25) {
 
                                 clanRole.addUser(user);
+
+                                logMessageUtil.sendLogMessage(server, user, clanRole, LogMessageTag.MEMBER_JOINED);
 
                                 responseEmbedBuilder.setColor(Color.GREEN).setTitle("Join clan success!")
                                         .setDescription("You are now a member of " + clanRole.getMentionTag());

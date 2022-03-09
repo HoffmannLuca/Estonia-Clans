@@ -2,10 +2,12 @@ package com.rust.estonia.discord.bot.clans.command.component.button.clan;
 
 import com.rust.estonia.discord.bot.clans.command.component.button.ButtonComponentCommand;
 import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
+import com.rust.estonia.discord.bot.clans.constant.LogMessageTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
@@ -29,6 +31,9 @@ public class GiveClanLeaderToUserButtonCommand implements ButtonComponentCommand
 
     @Autowired
     private ClanService clanService;
+
+    @Autowired
+    private LogMessageUtil logMessageUtil;
 
     @Override
     public String getName() {
@@ -78,6 +83,9 @@ public class GiveClanLeaderToUserButtonCommand implements ButtonComponentCommand
                             if(clanRole.hasUser(newLeader)) {
 
                                 if (clanService.setNewClanLeader(server, clanRole, newLeader)) {
+
+                                    logMessageUtil.sendLogMessage(server, newLeader, clanRole, LogMessageTag.MEMBER_PROMOTED_LEADER);
+
                                     responseEmbedBuilder.setColor(Color.GREEN)
                                             .setTitle("Give leader role success!")
                                             .setDescription(newLeader.getMentionTag() + " is now the new leader of " + clanRole.getMentionTag());

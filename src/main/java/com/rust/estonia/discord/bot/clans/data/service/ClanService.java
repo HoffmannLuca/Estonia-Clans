@@ -264,6 +264,20 @@ public class ClanService {
         return -1;
     }
 
+    public String getClanRankName(Server server, Role clanRole){
+
+        Clan clan = getClanByRole(server, clanRole);
+        String clanRankName = getClanCategoryTag(clan.getClanRank()).toUpperCase().replace("-", " ");
+
+        //remove `s` (last character)
+        clanRankName = Optional.of(clanRankName)
+                .filter(s -> !s.isEmpty())
+                .map(s -> s.substring(0, s.length() - 1))
+                .orElse(clanRankName);
+
+        return clanRankName;
+    }
+
     public String getClanCategoryTag(int rank){
 
         String clanCategoryTag="";

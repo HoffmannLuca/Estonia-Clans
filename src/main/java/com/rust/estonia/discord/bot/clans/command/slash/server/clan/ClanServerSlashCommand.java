@@ -1,12 +1,10 @@
 package com.rust.estonia.discord.bot.clans.command.slash.server.clan;
 
 import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashCommand;
-import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
-import com.rust.estonia.discord.bot.clans.constant.OptionLabelTag;
-import com.rust.estonia.discord.bot.clans.constant.RoleTag;
-import com.rust.estonia.discord.bot.clans.constant.ServerSlashTag;
+import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
+import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
@@ -33,6 +31,9 @@ public class ClanServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private ClanService clanService;
+
+    @Autowired
+    private LogMessageUtil logMessageUtil;
 
     private final String FIRST_OPTION_INFO = "info";
     private final String FIRST_OPTION_LEAVE = "leave";
@@ -135,6 +136,9 @@ public class ClanServerSlashCommand implements ServerSlashCommand {
                     if(officerRole!=null){
                         officerRole.removeUser(user);
                     }
+
+                    logMessageUtil.sendLogMessage(server, user, clanRole, LogMessageTag.MEMBER_LEFT);
+
                     responseEmbedBuilder.setColor(Color.GREEN)
                             .setTitle("Clan leave success!")
                             .setDescription("You are no longer a member of " + clanRole.getMentionTag());
