@@ -32,22 +32,21 @@ public class InfoGlobalSlashCommand implements GlobalSlashCommand {
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setAuthor(interaction.getApi().getYourself())
-                .setTitle("__Info__")
+                .setTitle("__Clan Info__")
+                .setDescription("here are a list of commands you can use with this bot")
                 .setColor(Color.BLUE)
-                .addField("Bot Info", "Display information about Bot features")
-                .addField("Clan Info", "Display information about Clan features")
-                .addField("Event Info", "Display information about Event features");
+                .addField("/clan info", "Display information about a clan")
+                .addField("/clan leave", "Leave the clan that you are a member of")
+                .addField("/clan-officer invite", "Send a clan invite to a user (leaders can use this as well)")
+                .addField("/clan-officer kick", "Kick a member of your clan (leaders can use this as well)")
+                .addField("/clan-leader rename", "Give the clan a new name")
+                .addField("/clan-leader promote", "Promote a member of your clan")
+                .addField("/clan-leader demote", "Demote a member of your clan")
+                .addField("/clan-leader disband", "Disband your clan or give leader to someone else");
 
         interaction.createImmediateResponder()
                 .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                 .addEmbed(embedBuilder)
-                .addComponents(
-                        ActionRow.of(
-                                Button.primary("info-bot", "Bot Info"),
-                                Button.primary("info-clan", "Clan Info"),
-                                Button.primary("info-event", "Event Info")
-                        )
-                )
                 .respond();
     }
 
