@@ -7,6 +7,7 @@ public class ServerSlashTag {
         throw new IllegalStateException();
     }
 
+    public static final String ADMIN_COMMAND = "admin";
     public static final String SETUP_COMMAND = "setup";
 
     public static final String CLAN_ADMIN_COMMAND = "clan-admin";
