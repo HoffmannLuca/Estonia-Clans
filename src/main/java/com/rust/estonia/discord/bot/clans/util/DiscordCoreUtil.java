@@ -58,7 +58,7 @@ public class DiscordCoreUtil {
 
     public Permissions getPermissions(PermissionType[] permissionTypes){
 
-        PermissionsBuilder permissionsBuilder = new PermissionsBuilder().setAllDenied();
+        PermissionsBuilder permissionsBuilder = new PermissionsBuilder().setDenied(PermissionType.READ_MESSAGES);
 
         for (PermissionType permissionType : permissionTypes) {
             permissionsBuilder.setAllowed(permissionType);

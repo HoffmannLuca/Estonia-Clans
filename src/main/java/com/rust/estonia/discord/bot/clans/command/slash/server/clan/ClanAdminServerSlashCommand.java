@@ -5,6 +5,7 @@ import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
+import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.ActionRow;
@@ -41,6 +42,10 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
     private final String FIRST_OPTION_RENAME = "rename";
     private final String FIRST_OPTION_PROMOTE = "promote";
     private final String FIRST_OPTION_DEMOTE = "demote";
+    private final String FIRST_OPTION_UPDATE = "update";
+
+    private final String UPDATE_SECOND_OPTION_CHAT = "chat";
+    private final String UPDATE_SECOND_OPTION_ROLE = "role";
 
     @Override
     public String getName() { return ServerSlashTag.CLAN_ADMIN_COMMAND; }
@@ -74,6 +79,27 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                         SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, FIRST_OPTION_DEMOTE, "description",
                                 Collections.singletonList(
                                         SlashCommandOption.create(SlashCommandOptionType.ROLE, OptionLabelTag.CLAN, "description", true)
+                                )
+                        ),
+                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND_GROUP, FIRST_OPTION_UPDATE, "description",
+                                Arrays.asList(
+
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, UPDATE_SECOND_OPTION_CHAT, "description",
+                                                Arrays.asList(
+
+                                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.ROLE, OptionLabelTag.CLAN, "description", true),
+                                                        SlashCommandOption.create(SlashCommandOptionType.CHANNEL, OptionLabelTag.NEW_CHAT, "description", true)
+
+                                                )
+                                        ),
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, UPDATE_SECOND_OPTION_ROLE, "description",
+                                                Arrays.asList(
+
+                                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.ROLE, OptionLabelTag.CLAN, "description", true),
+                                                        SlashCommandOption.create(SlashCommandOptionType.ROLE, OptionLabelTag.NEW_ROLE, "description", true)
+
+                                                )
+                                        )
                                 )
                         )
 
@@ -115,6 +141,10 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
             case FIRST_OPTION_DISBAND:
                 disbandClan(interaction, secondOption, commandArguments, user, channel, server);
+                break;
+
+            case FIRST_OPTION_UPDATE:
+                updateClan(interaction, secondOption, commandArguments, user, channel, server);
                 break;
 
             default:
@@ -363,4 +393,90 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
         response.addEmbed(responseEmbedBuilder).respond();
     }
+
+    private void updateClan(SlashCommandInteraction interaction, String secondOption, List<SlashCommandInteractionOption> commandArguments, User user, TextChannel channel, Server server) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
+
+        EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
+                .setColor(Color.RED)
+                .setTitle("Clan update error!")
+                .setDescription("something went wrong..");
+
+        Role clanRole = null;
+        Role newRole = null;
+        Channel newChat = null;
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.CLAN)){
+                if(option.getRoleValue().isPresent()){
+                    clanRole = option.getRoleValue().get();
+                }
+            }
+            if(option.getName().equals(OptionLabelTag.NEW_ROLE)){
+                if(option.getRoleValue().isPresent()){
+                    newRole = option.getRoleValue().get();
+                }
+            }
+            if(option.getName().equals(OptionLabelTag.NEW_CHAT)){
+                if(option.getChannelValue().isPresent()){
+                    newChat = option.getChannelValue().get();
+                }
+            }
+        }
+
+        if (clanRole!=null) {
+
+            if(clanService.isClanRole(server, clanRole)){
+
+                if(secondOption.equals(UPDATE_SECOND_OPTION_CHAT)){
+
+                    if(newChat!=null){
+
+                        if(newChat.asTextChannel().isPresent()){
+                            String oldChatMentionTag = clanService.getClanTextChatAsMentionTag(server, clanRole);
+
+                            if(clanService.setClanTextChat(server, clanRole, newChat.asTextChannel().get().getId())){
+                                String newChatMentionTag = clanService.getClanTextChatAsMentionTag(server, clanRole);
+
+                                responseEmbedBuilder.setColor(Color.GREEN)
+                                        .setTitle("Clan update success!")
+                                        .setDescription("New clan chat was set from "+oldChatMentionTag+" to "+newChatMentionTag);
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription("Please select a text channel");
+                        }
+                    } else {
+                        responseEmbedBuilder.setDescription("No new clan chat selected");
+                    }
+                }
+                if(secondOption.equals(UPDATE_SECOND_OPTION_ROLE)){
+
+                    if(newRole!=null){
+
+                        if(!clanService.isClanRole(server, newRole)) {
+
+                            if (clanService.setClanRole(server, clanRole, newRole)) {
+
+                                responseEmbedBuilder.setColor(Color.GREEN)
+                                        .setTitle("Clan update success!")
+                                        .setDescription("New clan role was set from " + clanRole.getMentionTag() + " to " + newRole.getMentionTag());
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription(newRole.getMentionTag()+" is already a clan role for a different clan");
+                        }
+                    } else {
+                        responseEmbedBuilder.setDescription("No new clan role selected");
+                    }
+                }
+            } else {
+                responseEmbedBuilder.setDescription(clanRole.getMentionTag() + " is not a clan");
+            }
+        } else {
+            responseEmbedBuilder.setDescription("No clan role selected");
+        }
+
+        response.addEmbed(responseEmbedBuilder).respond();
+    }
+
 }

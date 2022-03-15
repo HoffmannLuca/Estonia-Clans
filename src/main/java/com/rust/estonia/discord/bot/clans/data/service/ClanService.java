@@ -5,9 +5,7 @@ import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.model.Clan;
 import com.rust.estonia.discord.bot.clans.data.repository.ClanRepository;
 import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
-import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.ServerTextChannelBuilder;
-import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.channel.*;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.embed.EmbedFooter;
@@ -101,6 +99,71 @@ public class ClanService {
             }
         }
         return null;
+    }
+
+    public boolean setClanRole(Server server, Role clanRole, Role newClanRole){
+
+        Clan clan = getClanByRole(server, clanRole);
+
+        if(clan!=null && newClanRole!=null){
+
+            if(server.getTextChannelById(clan.getClanTextChatId()).isPresent()){
+                ServerTextChannel clanChat = server.getTextChannelById(clan.getClanTextChatId()).get();
+
+                clanChat.createUpdater()
+                        .setTopic(newClanRole.getMentionTag())
+                        .removePermissionOverwrite(clanRole)
+                        .addPermissionOverwrite(newClanRole, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND))
+                        .update();
+            }
+
+            for(User member : clanRole.getUsers()){
+                clanRole.removeUser(member);
+                newClanRole.addUser(member);
+            }
+            clan.setClanRoleId(newClanRole.getId());
+            updateClan(clan);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean setClanTextChat(Server server, Role clanRole, long newClanChatId){
+
+        Clan clan = getClanByRole(server, clanRole);
+
+        if(clan!=null && server.getTextChannelById(newClanChatId).isPresent()){
+            ServerTextChannelUpdater newClanChatUpdater = server.getTextChannelById(newClanChatId).get().createUpdater();
+
+            newClanChatUpdater.setTopic(clanRole.getMentionTag());
+            newClanChatUpdater.addPermissionOverwrite(server.getEveryoneRole(), discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_ONLY));
+            newClanChatUpdater.addPermissionOverwrite(clanRole, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+
+            Role admin = setupService.getServerRoleByRoleTag(server, RoleTag.ADMIN_ROLE);
+            Role moderator = setupService.getServerRoleByRoleTag(server, RoleTag.MODERATOR_ROLE);
+
+            if(admin!=null){
+                newClanChatUpdater.addPermissionOverwrite(admin, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+            }
+            if(moderator!=null){
+                newClanChatUpdater.addPermissionOverwrite(moderator, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+            }
+            newClanChatUpdater.update();
+
+            clan.setClanTextChatId(newClanChatId);
+            updateClan(clan);
+            return true;
+        }
+        return false;
+    }
+
+    public String getClanTextChatAsMentionTag(Server server, Role clanRole){
+
+        long chatId = getClanTextChat(server, clanRole).getId();
+        if(server.getTextChannelById(chatId).isPresent()){
+            return server.getTextChannelById(chatId).get().getMentionTag();
+        }
+        return "(no channel)";
     }
 
     public TextChannel getClanTextChat(Server server, Role clanRole){
