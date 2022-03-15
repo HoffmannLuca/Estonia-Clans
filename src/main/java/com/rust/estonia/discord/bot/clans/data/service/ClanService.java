@@ -123,6 +123,17 @@ public class ClanService {
                     if(category!=null){
                         channelBuilder.setCategory(category);
                     }
+                    Role admin = setupService.getServerRoleByRoleTag(server, RoleTag.ADMIN_ROLE);
+                    Role moderator = setupService.getServerRoleByRoleTag(server, RoleTag.MODERATOR_ROLE);
+
+                    if (admin != null) {
+                        channelBuilder.addPermissionOverwrite(admin, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+                    }
+
+                    if (moderator != null) {
+                        channelBuilder.addPermissionOverwrite(moderator, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+                    }
+
                     TextChannel clanTextChat = channelBuilder.create().get();
                     clan.setClanTextChatId(clanTextChat.getId());
                     updateClan(clan);
