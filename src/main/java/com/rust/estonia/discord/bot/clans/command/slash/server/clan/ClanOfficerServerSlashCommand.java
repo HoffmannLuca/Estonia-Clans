@@ -6,6 +6,7 @@ import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
 import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -22,6 +23,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.*;
 
 @Component
 public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
@@ -34,6 +36,8 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private LogMessageUtil logMessageUtil;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private final String FIRST_OPTION_INVITE = "invite";
     private final String FIRST_OPTION_KICK = "kick";
@@ -130,18 +134,29 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
                                     EmbedBuilder inviteEmbed = clanService.getClanInfoEmbedBuilder(server, clanRole);
                                     inviteEmbed.setTitle("You got invited to __" + clanRole.getName() + "__ clan");
 
-                                    new MessageBuilder()
-                                            .setContent(newMember.getMentionTag())
-                                            .addEmbed(inviteEmbed)
-                                            .addActionRow(
-                                                    Button.success(ButtonTag.JOIN_CLAN, "Join clan"),
-                                                    Button.danger(ButtonTag.DECLINE_CLAN, "Decline")
-                                            )
-                                            .send(clanInvites);
+                                    try {
+                                        Message inviteMessage = new MessageBuilder()
+                                                .setContent(newMember.getMentionTag())
+                                                .addEmbed(inviteEmbed)
+                                                .addActionRow(
+                                                        Button.success(ButtonTag.JOIN_CLAN, "Join clan"),
+                                                        Button.danger(ButtonTag.DECLINE_CLAN, "Decline")
+                                                )
+                                                .send(clanInvites).get();
 
-                                    responseEmbedBuilder.setColor(Color.GREEN)
-                                            .setTitle("Clan member invite success!")
-                                            .setDescription(newMember.getMentionTag() + " received an invitation in the **" + TextChannelTag.CLAN_INVITE_CHANNEL + "** channel");
+                                        final Runnable deleteInviteMessage = new Runnable() {
+                                            public void run() { inviteMessage.delete(); }
+                                        };
+
+                                        scheduler.schedule(deleteInviteMessage, 1, TimeUnit.DAYS);
+
+                                        responseEmbedBuilder.setColor(Color.GREEN)
+                                                .setTitle("Clan member invite success!")
+                                                .setDescription(newMember.getMentionTag() + " received an invitation in the **" + TextChannelTag.CLAN_INVITE_CHANNEL + "** channel");
+
+                                    } catch (InterruptedException | ExecutionException e) {
+                                        e.printStackTrace();
+                                    }
                                 } else {
                                     responseEmbedBuilder.setDescription("No clan invite channel available");
                                 }
