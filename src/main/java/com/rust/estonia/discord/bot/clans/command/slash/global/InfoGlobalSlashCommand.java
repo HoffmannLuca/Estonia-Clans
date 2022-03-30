@@ -2,8 +2,6 @@ package com.rust.estonia.discord.bot.clans.command.slash.global;
 
 import com.rust.estonia.discord.bot.clans.constant.GlobalSlashTag;
 import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.message.component.ActionRow;
-import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;

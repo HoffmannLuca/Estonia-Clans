@@ -18,5 +18,6 @@ public class OptionLabelTag {
     public static final String CLAN = "clan";
     public static final String NEW_CHAT = "new_chat";
     public static final String NEW_ROLE = "new_role";
+    public static final String NEW_LEADER = "new_leader";
     public static final String LEADER = "leader";
 }

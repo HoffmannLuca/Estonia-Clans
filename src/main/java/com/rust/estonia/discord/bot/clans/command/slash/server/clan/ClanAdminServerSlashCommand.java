@@ -46,6 +46,7 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
     private final String UPDATE_SECOND_OPTION_CHAT = "chat";
     private final String UPDATE_SECOND_OPTION_ROLE = "role";
+    private final String UPDATE_SECOND_OPTION_LEADER = "leader";
 
     @Override
     public String getName() { return ServerSlashTag.CLAN_ADMIN_COMMAND; }
@@ -97,6 +98,14 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
                                                         SlashCommandOption.createWithChoices(SlashCommandOptionType.ROLE, OptionLabelTag.CLAN, "description", true),
                                                         SlashCommandOption.create(SlashCommandOptionType.ROLE, OptionLabelTag.NEW_ROLE, "description", true)
+
+                                                )
+                                        ),
+                                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, UPDATE_SECOND_OPTION_LEADER, "description",
+                                                Arrays.asList(
+
+                                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.ROLE, OptionLabelTag.CLAN, "description", true),
+                                                        SlashCommandOption.create(SlashCommandOptionType.USER, OptionLabelTag.NEW_LEADER, "description", true)
 
                                                 )
                                         )
@@ -406,6 +415,7 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
         Role clanRole = null;
         Role newRole = null;
         Channel newChat = null;
+        User newLeader = null;
 
         for(SlashCommandInteractionOption option : commandArguments){
             if(option.getName().equals(OptionLabelTag.CLAN)){
@@ -421,6 +431,11 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
             if(option.getName().equals(OptionLabelTag.NEW_CHAT)){
                 if(option.getChannelValue().isPresent()){
                     newChat = option.getChannelValue().get();
+                }
+            }
+            if(option.getName().equals(OptionLabelTag.NEW_LEADER)){
+                if(option.getUserValue().isPresent()){
+                    newLeader = option.getUserValue().get();
                 }
             }
         }
@@ -464,6 +479,37 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
                             }
                         } else {
                             responseEmbedBuilder.setDescription(newRole.getMentionTag()+" is already a clan role for a different clan");
+                        }
+                    } else {
+                        responseEmbedBuilder.setDescription("No new clan role selected");
+                    }
+                }
+                if(secondOption.equals(UPDATE_SECOND_OPTION_LEADER)){
+
+                    if(newLeader!=null){
+
+                        if(clanService.getClanRoleByLeader(server, newLeader)==null) {
+
+                            if(clanService.isClanMember(server, newLeader)) {
+
+                                if(clanRole.hasUser(newLeader)) {
+
+                                    if (clanService.setNewClanLeader(server, clanRole, newLeader)) {
+
+                                        responseEmbedBuilder.setColor(Color.GREEN)
+                                                .setTitle("Clan update success!")
+                                                .setDescription("New leader of " + clanRole.getMentionTag() + " was set to " + newLeader.getMentionTag());
+                                    } else {
+                                        responseEmbedBuilder.setDescription("ERROR");
+                                    }
+                                } else {
+                                    responseEmbedBuilder.setDescription(newLeader.getMentionTag()+" is a member of a different clan");
+                                }
+                            } else {
+                                responseEmbedBuilder.setDescription(newLeader.getMentionTag()+" is not a member of a clan");
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription(newLeader.getMentionTag()+" is already a leader of a different clan");
                         }
                     } else {
                         responseEmbedBuilder.setDescription("No new clan role selected");

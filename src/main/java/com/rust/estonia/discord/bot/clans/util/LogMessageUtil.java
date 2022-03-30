@@ -63,19 +63,19 @@ public class LogMessageUtil {
         switch (logMessageTag){
 
             case LogMessageTag.CLAN_CREATED:
-                embedBuilder.setColor(Color.GREEN).setTitle("Clan created").setDescription(clanRole.getMentionTag());
+                embedBuilder.setColor(Color.GREEN).setTitle("Clan created").setDescription("**__"+clanRole.getName()+"__** "+clanRole.getMentionTag());
                 break;
 
             case LogMessageTag.CLAN_RENAMED:
-                embedBuilder.setColor(Color.YELLOW).setTitle("Clan renamed").setDescription(clanRole.getMentionTag());
+                embedBuilder.setColor(Color.YELLOW).setTitle("Clan renamed").setDescription("**__"+clanRole.getName()+"__** "+clanRole.getMentionTag());
                 break;
 
             case LogMessageTag.CLAN_PROMOTED:
-                embedBuilder.setColor(Color.BLUE).setTitle("Clan promoted to "+clanService.getClanRankName(server, clanRole)).setDescription(clanRole.getMentionTag());
+                embedBuilder.setColor(Color.BLUE).setTitle("Clan promoted to "+clanService.getClanRankName(server, clanRole)).setDescription("**__"+clanRole.getName()+"__** "+clanRole.getMentionTag());
                 break;
 
             case LogMessageTag.CLAN_DEMOTED:
-                embedBuilder.setColor(new Color(255, 108, 0)).setTitle("Clan demoted to "+clanService.getClanRankName(server, clanRole)).setDescription(clanRole.getMentionTag());
+                embedBuilder.setColor(new Color(255, 108, 0)).setTitle("Clan demoted to "+clanService.getClanRankName(server, clanRole)).setDescription("**__"+clanRole.getName()+"__** "+clanRole.getMentionTag());
                 break;
 
             case LogMessageTag.CLAN_DISBAND:
