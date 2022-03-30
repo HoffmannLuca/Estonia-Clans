@@ -432,24 +432,27 @@ public class ClanService {
     public boolean setNewClanLeader(Server server, Role clanRole, User newLeader) {
 
         Clan clan = getClanByRole(server, clanRole);
+
         if(clan!=null){
-            if(server.getMemberById(clan.getClanLeaderId()).isPresent()){
-                User oldLeader = server.getMemberById(clan.getClanLeaderId()).get();
-                Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
-                Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
-                if(officerRole!=null && leaderRole!=null){
+            Role officerRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_OFFICER_ROLE);
+            Role leaderRole = setupService.getServerRoleByRoleTag(server, RoleTag.CLAN_LEADER_ROLE);
+
+            if(officerRole!=null && leaderRole!=null){
+
+                if(server.getMemberById(clan.getClanLeaderId()).isPresent()) {
+                    User oldLeader = server.getMemberById(clan.getClanLeaderId()).get();
 
                     leaderRole.removeUser(oldLeader);
-                    leaderRole.addUser(newLeader);
-
-                    officerRole.removeUser(newLeader);
                     officerRole.addUser(oldLeader);
-
-                    clan.setClanLeaderId(newLeader.getId());
-                    updateClan(clan);
-                    return true;
                 }
+                leaderRole.addUser(newLeader);
+                officerRole.removeUser(newLeader);
+
+                clan.setClanLeaderId(newLeader.getId());
+                updateClan(clan);
+                return true;
             }
+
         }
         return false;
     }
