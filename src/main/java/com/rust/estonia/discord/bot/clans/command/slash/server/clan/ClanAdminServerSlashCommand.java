@@ -496,6 +496,8 @@ public class ClanAdminServerSlashCommand implements ServerSlashCommand {
 
                                     if (clanService.setNewClanLeader(server, clanRole, newLeader)) {
 
+                                        logMessageUtil.sendLogMessage(server, newLeader, clanRole, LogMessageTag.MEMBER_PROMOTED_LEADER);
+
                                         responseEmbedBuilder.setColor(Color.GREEN)
                                                 .setTitle("Clan update success!")
                                                 .setDescription("New leader of " + clanRole.getMentionTag() + " was set to " + newLeader.getMentionTag());
