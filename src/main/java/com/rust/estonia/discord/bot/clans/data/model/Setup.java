@@ -11,6 +11,7 @@ public class Setup {
     @Id
     private String id;
 
+    //General
     private long serverId;
 
     private String serverName;
@@ -23,13 +24,25 @@ public class Setup {
 
     private HashMap<String, Long> roleIdMap;
 
+    //Clans
+    private int maxClanRanks;
+
+    private HashMap<Integer, String> clanRanks;
+
+    private HashMap<String, Long> clanRankCategories;
+
     public Setup(long serverId, String serverName) {
+
         this.serverId = serverId;
         this.serverName = serverName;
         this.categoryIdMap=new HashMap<>();
         this.textChannelIdMap=new HashMap<>();
         this.voiceChannelIdMap=new HashMap<>();
         this.roleIdMap=new HashMap<>();
+
+        this.maxClanRanks = 5;
+        this.clanRanks=new HashMap<>();
+        this.clanRankCategories=new HashMap<>();
     }
 
     //ServerId
@@ -60,4 +73,16 @@ public class Setup {
     //RoleIdMap
     public HashMap<String, Long> getRoleIdMap() { return roleIdMap; }
     public void setRoleIdMap(HashMap<String, Long> roleIdMap) { this.roleIdMap = roleIdMap; }
+
+    //MaxClanRanks
+    public int getMaxClanRanks() { return maxClanRanks; }
+    public void setMaxClanRanks(int maxClanRanks) { this.maxClanRanks = maxClanRanks; }
+
+    //ClanRanks
+    public HashMap<Integer, String> getClanRanks() { return clanRanks; }
+    public void setClanRanks(HashMap<Integer, String> clanRanks) { this.clanRanks = clanRanks; }
+
+    //ClanRankCategories
+    public HashMap<String, Long> getClanRankCategories() { return clanRankCategories; }
+    public void setClanRankCategories(HashMap<String, Long> clanRankCategories) { this.clanRankCategories = clanRankCategories; }
 }

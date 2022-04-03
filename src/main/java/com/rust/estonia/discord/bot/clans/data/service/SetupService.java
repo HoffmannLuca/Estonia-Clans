@@ -207,6 +207,45 @@ public class SetupService {
         return false;
     }
 
+    public boolean setClanRank(Server server, int rank, String name){
+
+        Setup setup = getSetup(server);
+
+        if(setup!=null) {
+            int maxRanks = setup.getMaxClanRanks();
+
+            if(rank<maxRanks && rank>=0) {
+                HashMap<Integer, String> clanRanks = setup.getClanRanks();
+
+                if (clanRanks == null) {
+                    clanRanks = new HashMap<>();
+                }
+                clanRanks.put(rank, name);
+
+                setup.setClanRanks(clanRanks);
+                updateSetup(setup);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getClanRank(Server server, int rank){
+
+        Setup setup = getSetup(server);
+
+        if(setup!=null) {
+            HashMap<Integer, String> clanRanks = setup.getClanRanks();
+
+            if(!clanRanks.isEmpty()){
+                if(clanRanks.get(rank)!=null){
+                    return clanRanks.get(rank);
+                }
+            }
+        }
+        return "";
+    }
+
     public boolean roleHasUserByRoleTag(Server server, User user, String roleTag){
 
         if(server!=null) {
@@ -217,6 +256,7 @@ public class SetupService {
         }
         return false;
     }
+
     public HashMap<String, Long> getServerRoleIdMap(Server server) {
 
         Setup setup = getSetup(server);
