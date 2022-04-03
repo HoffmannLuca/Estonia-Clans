@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -235,15 +236,41 @@ public class SetupService {
         Setup setup = getSetup(server);
 
         if(setup!=null) {
-            HashMap<Integer, String> clanRanks = setup.getClanRanks();
+            int maxRanks = setup.getMaxClanRanks();
 
-            if(!clanRanks.isEmpty()){
-                if(clanRanks.get(rank)!=null){
-                    return clanRanks.get(rank);
+            if(rank<maxRanks && rank>=0) {
+                HashMap<Integer, String> clanRanks = setup.getClanRanks();
+
+                if (!clanRanks.isEmpty()) {
+                    if (clanRanks.get(rank) != null) {
+                        return clanRanks.get(rank);
+                    }
                 }
             }
         }
         return "";
+    }
+
+    public ArrayList<String> getAllClanRanks(Server server){
+
+        ArrayList<String> allRanks= new ArrayList<>();
+        Setup setup = getSetup(server);
+
+        if(setup!=null) {
+            HashMap<Integer, String> allRanksMap = setup.getClanRanks();
+
+            for (int rank : setup.getClanRanks().keySet()){
+                String rankName = allRanksMap.get(rank);
+                if(rankName!=null) {
+                    allRanks.add(allRanksMap.get(rank));
+                }
+            }
+        }
+
+        if(allRanks.size()==0){
+            allRanks.add("default");
+        }
+        return allRanks;
     }
 
     public boolean roleHasUserByRoleTag(Server server, User user, String roleTag){

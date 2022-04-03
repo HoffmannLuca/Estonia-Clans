@@ -13,7 +13,7 @@ public interface ServerSlashCommand {
 
     String getName();
 
-    SlashCommandBuilder getCommandBuilder();
+    SlashCommandBuilder getCommandBuilder(Server server);
 
     default ServerApplicationCommandPermissionsBuilder getPermissionBuilder(Server server){
 

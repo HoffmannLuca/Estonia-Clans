@@ -39,9 +39,14 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
     private final String FIRST_OPTION_ROLE = "role";
     private final String FIRST_OPTION_CHANNEL = "channel";
     private final String FIRST_OPTION_CATEGORY = "category";
+    private final String FIRST_OPTION_CLAN_RANK = "clan-rank";
 
     private final String CHANNEL_SECOND_OPTION_TEXT = "text";
     private final String CHANNEL_SECOND_OPTION_VOICE = "voice";
+
+    private final String CLAN_RANK_SECOND_OPTION_ADD = "add";
+    private final String CLAN_RANK_SECOND_OPTION_REMOVE = "remove";
+    private final String CLAN_RANK_SECOND_OPTION_SWITCH = "switch";
 
     @Override
     public String getName() {
@@ -49,12 +54,13 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
     }
 
     @Override
-    public SlashCommandBuilder getCommandBuilder() {
+    public SlashCommandBuilder getCommandBuilder(Server server) {
 
         List<SlashCommandOptionChoice> roleOptions = new ArrayList<>();
         List<SlashCommandOptionChoice> textChannelOptions = new ArrayList<>();
         List<SlashCommandOptionChoice> voiceChannelOptions = new ArrayList<>();
         List<SlashCommandOptionChoice> categoryOptions = new ArrayList<>();
+        List<SlashCommandOptionChoice> clanRankOptions = new ArrayList<>();
 
         for(String option : RoleTag.roleTags){
             roleOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
@@ -67,6 +73,9 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         }
         for(String option : CategoryTag.categoryTags){
             categoryOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
+        }
+        for(String option : setupService.getAllClanRanks(server)){
+            clanRankOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
         }
 
         return SlashCommand.with(ServerSlashTag.SETUP_COMMAND, "A command dedicated to setting up the bot",
@@ -100,6 +109,26 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
                                 SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.CATEGORY_TAG, "description", true,categoryOptions),
                                 SlashCommandOption.create(SlashCommandOptionType.CHANNEL, OptionLabelTag.CATEGORY, "description", true)
+                        )),
+
+                        SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND_GROUP, FIRST_OPTION_CLAN_RANK, "Manage clan ranks", Arrays.asList(
+
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CLAN_RANK_SECOND_OPTION_ADD, "Add a new clan rank", Collections.singletonList(
+
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.RANK_NAME, "description", true)
+
+                                )),
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CLAN_RANK_SECOND_OPTION_REMOVE, "Remove a clan rank", Collections.singletonList(
+
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.CLAN_RANK, "description", true, clanRankOptions)
+
+                                )),
+                                SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CLAN_RANK_SECOND_OPTION_SWITCH, "Switch the positions of two clan ranks", Arrays.asList(
+
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.CLAN_RANK, "description", true, clanRankOptions),
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.SWITCH_WITH, "description", true, clanRankOptions)
+
+                                ))
                         ))
                 )
         ).setDefaultPermission(false);
@@ -134,6 +163,10 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
             case FIRST_OPTION_CATEGORY:
                 setCategory(interaction, server, commandArguments);
+                break;
+
+            case FIRST_OPTION_CLAN_RANK:
+                setupClanRank(interaction, server, commandArguments);
                 break;
 
             default:
@@ -320,6 +353,18 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                         .setDescription("Please select a category");
             }
         }
+
+        response.addEmbed(responseEmbedBuilder).respond();
+    }
+
+    private void setupClanRank(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments) {
+
+        InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
+
+        EmbedBuilder responseEmbedBuilder = new EmbedBuilder()
+                .setColor(Color.RED)
+                .setTitle("Setup error!")
+                .setDescription("something went wrong..");
 
         response.addEmbed(responseEmbedBuilder).respond();
     }

@@ -20,4 +20,7 @@ public class OptionLabelTag {
     public static final String NEW_ROLE = "new_role";
     public static final String NEW_LEADER = "new_leader";
     public static final String LEADER = "leader";
+    public static final String RANK_NAME = "rank_name";
+    public static final String CLAN_RANK = "clan_rank";
+    public static final String SWITCH_WITH = "switch_with";
 }

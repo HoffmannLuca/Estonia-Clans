@@ -91,11 +91,13 @@ public class EstoniaClansApplication {
 		}
 		api.bulkOverwriteGlobalApplicationCommands(globalCommandBuilder).join();
 
-		List<SlashCommandBuilder> serverCommandBuilder = new ArrayList<>();
-		for(ServerSlashCommand command : serverSlashCommands){
-			serverCommandBuilder.add(command.getCommandBuilder());
-		}
+
 		for(Server server : api.getServers()){
+
+			List<SlashCommandBuilder> serverCommandBuilder = new ArrayList<>();
+			for(ServerSlashCommand command : serverSlashCommands){
+				serverCommandBuilder.add(command.getCommandBuilder(server));
+			}
 
 			api.bulkOverwriteServerApplicationCommands(server, serverCommandBuilder);
 

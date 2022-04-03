@@ -20,13 +20,13 @@ public class BotServerJoinListener implements ServerJoinListener {
     @Override
     public void onServerJoin(ServerJoinEvent event) {
 
+        Server server = event.getServer();
         List<SlashCommandBuilder> serverCommandBuilder = new ArrayList<>();
+
         for(ServerSlashCommand command : serverSlashCommands){
-            serverCommandBuilder.add(command.getCommandBuilder());
-        }
-        for(Server server : event.getApi().getServers()){
-            event.getApi().bulkOverwriteServerApplicationCommands(server, serverCommandBuilder);
+            serverCommandBuilder.add(command.getCommandBuilder(server));
         }
 
+        event.getApi().bulkOverwriteServerApplicationCommands(server, serverCommandBuilder);
     }
 }

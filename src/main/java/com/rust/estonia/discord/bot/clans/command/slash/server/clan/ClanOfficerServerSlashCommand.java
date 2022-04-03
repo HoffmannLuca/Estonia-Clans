@@ -46,7 +46,7 @@ public class ClanOfficerServerSlashCommand implements ServerSlashCommand {
     public String getName() { return ServerSlashTag.CLAN_OFFICER_COMMAND; }
 
     @Override
-    public SlashCommandBuilder getCommandBuilder() {
+    public SlashCommandBuilder getCommandBuilder(Server server) {
         return SlashCommand.with(ServerSlashTag.CLAN_OFFICER_COMMAND, "description",
                 Arrays.asList(
                         SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, FIRST_OPTION_INVITE, "description",
