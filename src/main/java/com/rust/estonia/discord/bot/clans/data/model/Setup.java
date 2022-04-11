@@ -27,9 +27,9 @@ public class Setup {
     //Clans
     private int maxClanRanks;
 
-    private HashMap<Integer, String> clanRanks;
+    private HashMap<Long, String> clanRanks;
 
-    private HashMap<String, Long> clanRankCategories;
+    private HashMap<Long, Long> clanRankCategories;
 
     public Setup(long serverId, String serverName) {
 
@@ -79,10 +79,10 @@ public class Setup {
     public void setMaxClanRanks(int maxClanRanks) { this.maxClanRanks = maxClanRanks; }
 
     //ClanRanks
-    public HashMap<Integer, String> getClanRanks() { return clanRanks; }
-    public void setClanRanks(HashMap<Integer, String> clanRanks) { this.clanRanks = clanRanks; }
+    public HashMap<Long, String> getClanRanks() { return clanRanks; }
+    public void setClanRanks(HashMap<Long, String> clanRanks) { this.clanRanks = clanRanks; }
 
     //ClanRankCategories
-    public HashMap<String, Long> getClanRankCategories() { return clanRankCategories; }
-    public void setClanRankCategories(HashMap<String, Long> clanRankCategories) { this.clanRankCategories = clanRankCategories; }
+    public HashMap<Long, Long> getClanRankCategories() { return clanRankCategories; }
+    public void setClanRankCategories(HashMap<Long, Long> clanRankCategories) { this.clanRankCategories = clanRankCategories; }
 }

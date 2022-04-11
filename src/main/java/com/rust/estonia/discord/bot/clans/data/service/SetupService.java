@@ -3,11 +3,13 @@ package com.rust.estonia.discord.bot.clans.data.service;
 import com.rust.estonia.discord.bot.clans.data.model.Setup;
 import com.rust.estonia.discord.bot.clans.data.repository.SetupRepository;
 import org.javacord.api.entity.channel.*;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.ApplicationCommandPermissionType;
 import org.javacord.api.interaction.ApplicationCommandPermissions;
+import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,15 +210,23 @@ public class SetupService {
         return false;
     }
 
-    public boolean setClanRank(Server server, int rank, String name){
+    public boolean addClanRank(Server server, String name){
+
+        if(!isClanRank(server, name)) {
+            long newRank = getAllClanRanks(server).size();
+            return setClanRank(server, newRank, name.toLowerCase());
+        }
+        return false;
+    }
+
+    private boolean setClanRank(Server server, long rank, String name){
 
         Setup setup = getSetup(server);
 
         if(setup!=null) {
-            int maxRanks = setup.getMaxClanRanks();
 
-            if(rank<maxRanks && rank>=0) {
-                HashMap<Integer, String> clanRanks = setup.getClanRanks();
+            if(belowMaxRanks(server)) {
+                HashMap<Long, String> clanRanks = setup.getClanRanks();
 
                 if (clanRanks == null) {
                     clanRanks = new HashMap<>();
@@ -231,7 +241,7 @@ public class SetupService {
         return false;
     }
 
-    public String getClanRank(Server server, int rank){
+    public String getClanRank(Server server, long rank){
 
         Setup setup = getSetup(server);
 
@@ -239,7 +249,7 @@ public class SetupService {
             int maxRanks = setup.getMaxClanRanks();
 
             if(rank<maxRanks && rank>=0) {
-                HashMap<Integer, String> clanRanks = setup.getClanRanks();
+                HashMap<Long, String> clanRanks = setup.getClanRanks();
 
                 if (!clanRanks.isEmpty()) {
                     if (clanRanks.get(rank) != null) {
@@ -257,9 +267,9 @@ public class SetupService {
         Setup setup = getSetup(server);
 
         if(setup!=null) {
-            HashMap<Integer, String> allRanksMap = setup.getClanRanks();
+            HashMap<Long, String> allRanksMap = setup.getClanRanks();
 
-            for (int rank : setup.getClanRanks().keySet()){
+            for (long rank : setup.getClanRanks().keySet()){
                 String rankName = allRanksMap.get(rank);
                 if(rankName!=null) {
                     allRanks.add(allRanksMap.get(rank));
@@ -267,10 +277,112 @@ public class SetupService {
             }
         }
 
-        if(allRanks.size()==0){
-            allRanks.add("default");
-        }
         return allRanks;
+    }
+
+    public EmbedBuilder addClanRankListAsEmbedField(Server server, EmbedBuilder embedBuilder){
+
+        Setup setup = getSetup(server);
+
+        if(setup!=null){
+            HashMap<Long, String> allRanks = setup.getClanRanks();
+            StringBuilder ranks = new StringBuilder();
+
+            for (long i = allRanks.size()-1; i >= 0; i--) {
+                ranks.append("**").append(i+1).append(" - ").append(allRanks.get(i).toUpperCase()).append("**").append("\n");
+            }
+
+            if(!ranks.toString().equals("")){
+                embedBuilder.addField("__Ranks__", ranks.toString(), true);
+            }
+        }
+        return embedBuilder;
+    }
+
+    public boolean isClanRank(Server server, String name){
+
+        return getAllClanRanks(server).contains(name.toLowerCase());
+    }
+
+    public boolean belowMaxRanks(Server server){
+
+        Setup setup = getSetup(server);
+
+        if(setup!=null) {
+
+            if(setup.getClanRanks()!=null) {
+                long rankCount =setup.getClanRanks().size();
+                int maxRanks = setup.getMaxClanRanks();
+                return rankCount < maxRanks;
+            }
+        }
+        return false;
+    }
+
+    public boolean switchClanRanks(Server server, long clanRank, long switchWith) {
+
+        Setup setup = getSetup(server);
+
+        if(setup!=null) {
+
+            if (setup.getClanRanks() != null) {
+
+                if (setup.getClanRanks().containsKey(clanRank) && setup.getClanRanks().containsKey(switchWith)) {
+                    String temp = setup.getClanRanks().get(clanRank);
+                    setup.getClanRanks().put(clanRank, setup.getClanRanks().get(switchWith));
+                    setup.getClanRanks().put(switchWith, temp);
+
+                    updateSetup(setup);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean removeClanRank(Server server, long rank){
+
+        Setup setup = getSetup(server);
+
+        if(setup!=null) {
+
+            if (setup.getClanRanks() != null) {
+
+                if(setup.getClanRanks().containsKey(rank)){
+
+                    for(long i = rank; i<setup.getClanRanks().size(); i++){
+
+                        if(setup.getClanRanks().containsKey(i+1)){
+                            setup.getClanRanks().put(i, setup.getClanRanks().get(i+1));
+                        } else {
+                            setup.getClanRanks().remove(i);
+                        }
+                    }
+                    updateSetup(setup);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public List<SlashCommandOptionChoice> getClanRankOptions(Server server){
+        List<SlashCommandOptionChoice> ranks = new ArrayList<>();
+
+        Setup setup = getSetup(server);
+
+        if(setup!=null){
+
+            for (long i = setup.getClanRanks().size()-1; i >= 0; i--) {
+                ranks.add(SlashCommandOptionChoice.create((i+1)+". "+setup.getClanRanks().get(i).toUpperCase(), i));
+            }
+        }
+
+        if(ranks.isEmpty()){
+            ranks.add(SlashCommandOptionChoice.create("(no-rank-available)",-1));
+        }
+        return ranks;
     }
 
     public boolean roleHasUserByRoleTag(Server server, User user, String roleTag){

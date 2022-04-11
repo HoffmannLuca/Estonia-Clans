@@ -39,7 +39,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
     private final String FIRST_OPTION_ROLE = "role";
     private final String FIRST_OPTION_CHANNEL = "channel";
     private final String FIRST_OPTION_CATEGORY = "category";
-    private final String FIRST_OPTION_CLAN_RANK = "clan-rank";
+    private final String FIRST_OPTION_CLAN_RANK = "clan_rank";
 
     private final String CHANNEL_SECOND_OPTION_TEXT = "text";
     private final String CHANNEL_SECOND_OPTION_VOICE = "voice";
@@ -60,7 +60,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         List<SlashCommandOptionChoice> textChannelOptions = new ArrayList<>();
         List<SlashCommandOptionChoice> voiceChannelOptions = new ArrayList<>();
         List<SlashCommandOptionChoice> categoryOptions = new ArrayList<>();
-        List<SlashCommandOptionChoice> clanRankOptions = new ArrayList<>();
+        List<SlashCommandOptionChoice> clanRankOptions = setupService.getClanRankOptions(server);
 
         for(String option : RoleTag.roleTags){
             roleOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
@@ -73,9 +73,6 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         }
         for(String option : CategoryTag.categoryTags){
             categoryOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
-        }
-        for(String option : setupService.getAllClanRanks(server)){
-            clanRankOptions.add(SlashCommandOptionChoice.create(option.toUpperCase(), option));
         }
 
         return SlashCommand.with(ServerSlashTag.SETUP_COMMAND, "A command dedicated to setting up the bot",
@@ -120,13 +117,13 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                                 )),
                                 SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CLAN_RANK_SECOND_OPTION_REMOVE, "Remove a clan rank", Collections.singletonList(
 
-                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.CLAN_RANK, "description", true, clanRankOptions)
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.LONG, OptionLabelTag.CLAN_RANK, "description", true, clanRankOptions)
 
                                 )),
                                 SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, CLAN_RANK_SECOND_OPTION_SWITCH, "Switch the positions of two clan ranks", Arrays.asList(
 
-                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.CLAN_RANK, "description", true, clanRankOptions),
-                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.STRING, OptionLabelTag.SWITCH_WITH, "description", true, clanRankOptions)
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.LONG, OptionLabelTag.CLAN_RANK, "description", true, clanRankOptions),
+                                        SlashCommandOption.createWithChoices(SlashCommandOptionType.LONG, OptionLabelTag.SWITCH_WITH, "description", true, clanRankOptions)
 
                                 ))
                         ))
@@ -166,7 +163,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                 break;
 
             case FIRST_OPTION_CLAN_RANK:
-                setupClanRank(interaction, server, commandArguments);
+                setupClanRank(interaction, server, commandArguments, secondOption);
                 break;
 
             default:
@@ -357,7 +354,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         response.addEmbed(responseEmbedBuilder).respond();
     }
 
-    private void setupClanRank(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments) {
+    private void setupClanRank(SlashCommandInteraction interaction, Server server, List<SlashCommandInteractionOption> commandArguments, String secondOption) {
 
         InteractionImmediateResponseBuilder response = interaction.createImmediateResponder().setFlags(InteractionCallbackDataFlag.EPHEMERAL);
 
@@ -366,6 +363,98 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                 .setTitle("Setup error!")
                 .setDescription("something went wrong..");
 
+        String rankName = "";
+        long clanRank = 0;
+        long switchWith = 0;
+
+        for(SlashCommandInteractionOption option : commandArguments){
+            if(option.getName().equals(OptionLabelTag.RANK_NAME)){
+                if(option.getStringValue().isPresent()){
+                    rankName = option.getStringValue().get();
+                }
+            }
+            if(option.getName().equals(OptionLabelTag.CLAN_RANK)){
+                if(option.getLongValue().isPresent()){
+                    clanRank = option.getLongValue().get();
+                }
+            }
+            if(option.getName().equals(OptionLabelTag.SWITCH_WITH)){
+                if(option.getLongValue().isPresent()){
+                    switchWith = option.getLongValue().get();
+                }
+            }
+        }
+
+        if(server!=null){
+            switch (secondOption){
+
+                case CLAN_RANK_SECOND_OPTION_ADD:
+
+                    if(!rankName.equals("")){
+
+                        if(!setupService.isClanRank(server, rankName)) {
+
+                            if(setupService.belowMaxRanks(server)) {
+
+                                if (setupService.addClanRank(server, rankName)) {
+                                    applicationCommandUtil.updateServerSlashCommands(server);
+                                    responseEmbedBuilder.setColor(Color.GREEN)
+                                            .setTitle("Setup success!")
+                                            .setDescription("");
+                                } else {
+                                    responseEmbedBuilder.setDescription("Rank could not be added");
+                                }
+                            } else {
+                                responseEmbedBuilder.setDescription("You have reached the max amount of ranks");
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription("**"+rankName+"** already exists");
+                        }
+                    }
+                    break;
+
+                case CLAN_RANK_SECOND_OPTION_REMOVE:
+
+                    if(clanRank>=0){
+
+                        if (setupService.removeClanRank(server, clanRank)) {
+                            applicationCommandUtil.updateServerSlashCommands(server);
+                            responseEmbedBuilder.setColor(Color.GREEN)
+                                    .setTitle("Setup success!")
+                                    .setDescription("");
+                        } else {
+                            responseEmbedBuilder.setDescription("Rank could not be removed");
+                        }
+                    }
+                    break;
+
+                case CLAN_RANK_SECOND_OPTION_SWITCH:
+
+                    if(clanRank>=0 && switchWith>=0){
+
+                        if(clanRank != switchWith) {
+
+                            if (setupService.switchClanRanks(server, clanRank, switchWith)) {
+                                applicationCommandUtil.updateServerSlashCommands(server);
+                                responseEmbedBuilder.setColor(Color.GREEN)
+                                        .setTitle("Setup success!")
+                                        .setDescription("");
+                            } else {
+                                responseEmbedBuilder.setDescription("Ranks could not be switched");
+                            }
+                        } else {
+                            responseEmbedBuilder.setDescription("you can't switch the same rank with itself");
+                        }
+                    }
+                    break;
+
+                default:
+                    responseEmbedBuilder.setDescription("**"+secondOption+"** is not a valid command");
+            }
+            setupService.addClanRankListAsEmbedField(server, responseEmbedBuilder);
+        } else {
+            responseEmbedBuilder.setDescription("No server available!");
+        }
         response.addEmbed(responseEmbedBuilder).respond();
     }
 }
