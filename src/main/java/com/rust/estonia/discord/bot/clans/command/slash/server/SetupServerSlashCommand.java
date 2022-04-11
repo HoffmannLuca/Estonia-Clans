@@ -363,6 +363,12 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                 .setTitle("Setup error!")
                 .setDescription("something went wrong..");
 
+        boolean warning = false;
+        EmbedBuilder warningEmbedBuilder = new EmbedBuilder()
+                .setColor(Color.YELLOW)
+                .setTitle("Warning!")
+                .setDescription("**It may take a bit until the rank options for __remove__ / __switch__ rank commands will be updated**");
+
         String rankName = "";
         long clanRank = 0;
         long switchWith = 0;
@@ -401,6 +407,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                                     responseEmbedBuilder.setColor(Color.GREEN)
                                             .setTitle("Setup success!")
                                             .setDescription("");
+                                    warning = true;
                                 } else {
                                     responseEmbedBuilder.setDescription("Rank could not be added");
                                 }
@@ -422,6 +429,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                             responseEmbedBuilder.setColor(Color.GREEN)
                                     .setTitle("Setup success!")
                                     .setDescription("");
+                            warning = true;
                         } else {
                             responseEmbedBuilder.setDescription("Rank could not be removed");
                         }
@@ -439,6 +447,7 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
                                 responseEmbedBuilder.setColor(Color.GREEN)
                                         .setTitle("Setup success!")
                                         .setDescription("");
+                                warning = true;
                             } else {
                                 responseEmbedBuilder.setDescription("Ranks could not be switched");
                             }
@@ -455,6 +464,11 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         } else {
             responseEmbedBuilder.setDescription("No server available!");
         }
-        response.addEmbed(responseEmbedBuilder).respond();
+        response.addEmbed(responseEmbedBuilder);
+
+        if(warning) {
+            response.addEmbed(warningEmbedBuilder);
+        }
+        response.respond();
     }
 }
