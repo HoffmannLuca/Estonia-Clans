@@ -3,7 +3,6 @@ package com.rust.estonia.discord.bot.clans.command.slash.server;
 import com.rust.estonia.discord.bot.clans.util.ApplicationCommandUtil;
 import com.rust.estonia.discord.bot.clans.constant.*;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
-import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
@@ -27,9 +26,6 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
 
     @Autowired
     private SetupService setupService;
-
-    @Autowired
-    private DiscordCoreUtil discordCoreUtil;
 
     @Autowired
     private ApplicationCommandUtil applicationCommandUtil;
@@ -187,7 +183,9 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         if (roleIdMap.size() != 0) {
             responseEmbedBuilder.addField("Role Settings", "-----------------------------------", false);
             for (String key : roleIdMap.keySet()) {
-                responseEmbedBuilder.addField(key, discordCoreUtil.getRoleAsMentionTag(server, roleIdMap.get(key)), true);
+                if(server.getRoleById(roleIdMap.get(key)).isPresent()) {
+                    responseEmbedBuilder.addField(key, server.getRoleById(roleIdMap.get(key)).get().getMentionTag(), true);
+                }
             }
         }
 
@@ -195,7 +193,9 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         if (textChannelIdMap.size() != 0) {
             responseEmbedBuilder.addField("Text Channel Settings", "-----------------------------------", false);
             for (String key : textChannelIdMap.keySet()) {
-                responseEmbedBuilder.addField(key, discordCoreUtil.getTextChannelAsMentionTag(server, textChannelIdMap.get(key)), true);
+                if(server.getTextChannelById(textChannelIdMap.get(key)).isPresent()){
+                    responseEmbedBuilder.addField(key, server.getTextChannelById(textChannelIdMap.get(key)).get().getMentionTag(), true);
+                }
             }
         }
 
@@ -203,7 +203,9 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         if (voiceChannelIdMap.size() != 0) {
             responseEmbedBuilder.addField("Voice Channel Settings", "-----------------------------------", false);
             for (String key : voiceChannelIdMap.keySet()) {
-                responseEmbedBuilder.addField(key, discordCoreUtil.getVoiceChannelName(server, voiceChannelIdMap.get(key)), true);
+                if(server.getVoiceChannelById(voiceChannelIdMap.get(key)).isPresent()){
+                    responseEmbedBuilder.addField(key, server.getVoiceChannelById(voiceChannelIdMap.get(key)).get().getName(), true);
+                }
             }
         }
 
@@ -211,10 +213,11 @@ public class SetupServerSlashCommand implements ServerSlashCommand {
         if (categoryIdMap.size() != 0) {
             responseEmbedBuilder.addField("Category Settings", "-----------------------------------", false);
             for (String key : categoryIdMap.keySet()) {
-                responseEmbedBuilder.addField(key, discordCoreUtil.getChannelCategoryName(server, categoryIdMap.get(key)), true);
+                if(server.getChannelCategoryById(categoryIdMap.get(key)).isPresent()){
+                    responseEmbedBuilder.addField(key, server.getChannelCategoryById(categoryIdMap.get(key)).get().getName().toUpperCase(), true);
+                }
             }
         }
-
         response.addEmbed(responseEmbedBuilder).respond();
     }
 

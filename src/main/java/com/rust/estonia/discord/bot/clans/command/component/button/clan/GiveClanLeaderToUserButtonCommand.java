@@ -6,7 +6,7 @@ import com.rust.estonia.discord.bot.clans.constant.LogMessageTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
-import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import com.rust.estonia.discord.bot.clans.util.DiscordUtil;
 import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -24,7 +24,7 @@ import java.awt.*;
 public class GiveClanLeaderToUserButtonCommand implements ButtonComponentCommand {
 
     @Autowired
-    private DiscordCoreUtil discordCoreUtil;
+    private DiscordUtil discordUtil;
 
     @Autowired
     private SetupService setupService;
@@ -69,8 +69,8 @@ public class GiveClanLeaderToUserButtonCommand implements ButtonComponentCommand
             String[] mentionedTagArray = message.getContent().split(" ");
 
             if(mentionedTagArray.length>1){
-                long roleId = discordCoreUtil.getIdFromMentionedTag(mentionedTagArray[0]);
-                long userId = discordCoreUtil.getIdFromMentionedTag(mentionedTagArray[1]);
+                long roleId = discordUtil.getIdFromMentionedTag(mentionedTagArray[0]);
+                long userId = discordUtil.getIdFromMentionedTag(mentionedTagArray[1]);
 
                 if(server.getRoleById(roleId).isPresent()) {
                     Role clanRole = server.getRoleById(roleId).get();

@@ -3,7 +3,7 @@ package com.rust.estonia.discord.bot.clans.command.component.button.clan;
 import com.rust.estonia.discord.bot.clans.command.component.button.ButtonComponentCommand;
 import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
-import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import com.rust.estonia.discord.bot.clans.util.DiscordUtil;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
@@ -21,7 +21,7 @@ import java.awt.*;
 public class DeclineClanInviteButtonCommand implements ButtonComponentCommand {
 
     @Autowired
-    private DiscordCoreUtil discordCoreUtil;
+    private DiscordUtil discordUtil;
 
     @Autowired
     private ClanService clanService;
@@ -41,7 +41,7 @@ public class DeclineClanInviteButtonCommand implements ButtonComponentCommand {
 
         if(interaction.getServer().isPresent()){
             Server server = interaction.getServer().get();
-            long invitedUserId = discordCoreUtil.getIdFromMentionedTag(message.getContent());
+            long invitedUserId = discordUtil.getIdFromMentionedTag(message.getContent());
 
             if(server.getMemberById(invitedUserId).isPresent()){
 

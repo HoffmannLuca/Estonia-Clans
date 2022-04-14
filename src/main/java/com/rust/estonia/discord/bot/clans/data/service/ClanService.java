@@ -4,7 +4,7 @@ import com.rust.estonia.discord.bot.clans.constant.CategoryTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.model.Clan;
 import com.rust.estonia.discord.bot.clans.data.repository.ClanRepository;
-import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import com.rust.estonia.discord.bot.clans.util.DiscordUtil;
 import org.javacord.api.entity.channel.*;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -31,7 +31,7 @@ public class ClanService {
     private SetupService setupService;
 
     @Autowired
-    private DiscordCoreUtil discordCoreUtil;
+    private DiscordUtil discordUtil;
 
     private Logger logger = LoggerFactory.getLogger(ClanService.class);
 
@@ -65,7 +65,7 @@ public class ClanService {
             } else {
                 try{
                     Role clanRole = server.createRoleBuilder()
-                            .setPermissions(discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_EMPTY))
+                            .setPermissions(discordUtil.getPermissions(discordUtil.PERMISSION_EMPTY))
                             .setName(clan.getClanName())
                             .setMentionable(true)
                             .setDisplaySeparately(false)
@@ -113,7 +113,7 @@ public class ClanService {
                 clanChat.createUpdater()
                         .setTopic(newClanRole.getMentionTag())
                         .removePermissionOverwrite(clanRole)
-                        .addPermissionOverwrite(newClanRole, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND))
+                        .addPermissionOverwrite(newClanRole, discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_SEND))
                         .update();
             }
 
@@ -136,17 +136,17 @@ public class ClanService {
             ServerTextChannelUpdater newClanChatUpdater = server.getTextChannelById(newClanChatId).get().createUpdater();
 
             newClanChatUpdater.setTopic(clanRole.getMentionTag());
-            newClanChatUpdater.addPermissionOverwrite(server.getEveryoneRole(), discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_ONLY));
-            newClanChatUpdater.addPermissionOverwrite(clanRole, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+            newClanChatUpdater.addPermissionOverwrite(server.getEveryoneRole(), discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_ONLY));
+            newClanChatUpdater.addPermissionOverwrite(clanRole, discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_SEND));
 
             Role admin = setupService.getServerRoleByRoleTag(server, RoleTag.ADMIN_ROLE);
             Role moderator = setupService.getServerRoleByRoleTag(server, RoleTag.MODERATOR_ROLE);
 
             if(admin!=null){
-                newClanChatUpdater.addPermissionOverwrite(admin, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+                newClanChatUpdater.addPermissionOverwrite(admin, discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_SEND));
             }
             if(moderator!=null){
-                newClanChatUpdater.addPermissionOverwrite(moderator, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+                newClanChatUpdater.addPermissionOverwrite(moderator, discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_SEND));
             }
             newClanChatUpdater.update();
 
@@ -177,8 +177,8 @@ public class ClanService {
                 try{
                     ServerTextChannelBuilder channelBuilder = server.createTextChannelBuilder()
                             .setName(clan.getClanName())
-                            .addPermissionOverwrite(server.getEveryoneRole(), discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_ONLY))
-                            .addPermissionOverwrite(clanRole, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND))
+                            .addPermissionOverwrite(server.getEveryoneRole(), discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_ONLY))
+                            .addPermissionOverwrite(clanRole, discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_SEND))
                             .setTopic(clanRole.getMentionTag())
                             .setAuditLogReason("Create clan text chat");
 
@@ -190,11 +190,11 @@ public class ClanService {
                     Role moderator = setupService.getServerRoleByRoleTag(server, RoleTag.MODERATOR_ROLE);
 
                     if (admin != null) {
-                        channelBuilder.addPermissionOverwrite(admin, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+                        channelBuilder.addPermissionOverwrite(admin, discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_SEND));
                     }
 
                     if (moderator != null) {
-                        channelBuilder.addPermissionOverwrite(moderator, discordCoreUtil.getPermissions(discordCoreUtil.PERMISSION_VIEW_SEND));
+                        channelBuilder.addPermissionOverwrite(moderator, discordUtil.getPermissions(discordUtil.PERMISSION_VIEW_SEND));
                     }
 
                     TextChannel clanTextChat = channelBuilder.create().get();

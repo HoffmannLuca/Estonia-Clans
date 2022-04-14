@@ -4,7 +4,7 @@ import com.rust.estonia.discord.bot.clans.command.component.button.ButtonCompone
 import com.rust.estonia.discord.bot.clans.constant.ButtonTag;
 import com.rust.estonia.discord.bot.clans.constant.LogMessageTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
-import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import com.rust.estonia.discord.bot.clans.util.DiscordUtil;
 import com.rust.estonia.discord.bot.clans.util.LogMessageUtil;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -23,7 +23,7 @@ import java.awt.*;
 public class JoinClanButtonCommand implements ButtonComponentCommand {
 
     @Autowired
-    private DiscordCoreUtil discordCoreUtil;
+    private DiscordUtil discordUtil;
 
     @Autowired
     private ClanService clanService;
@@ -46,7 +46,7 @@ public class JoinClanButtonCommand implements ButtonComponentCommand {
 
         if(interaction.getServer().isPresent()){
             Server server = interaction.getServer().get();
-            long invitedUserId = discordCoreUtil.getIdFromMentionedTag(message.getContent());
+            long invitedUserId = discordUtil.getIdFromMentionedTag(message.getContent());
 
             if(server.getMemberById(invitedUserId).isPresent()){
 

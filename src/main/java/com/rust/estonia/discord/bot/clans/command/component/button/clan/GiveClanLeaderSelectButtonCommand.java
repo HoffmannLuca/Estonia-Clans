@@ -6,7 +6,7 @@ import com.rust.estonia.discord.bot.clans.constant.MenuTag;
 import com.rust.estonia.discord.bot.clans.constant.RoleTag;
 import com.rust.estonia.discord.bot.clans.data.service.ClanService;
 import com.rust.estonia.discord.bot.clans.data.service.SetupService;
-import com.rust.estonia.discord.bot.clans.util.DiscordCoreUtil;
+import com.rust.estonia.discord.bot.clans.util.DiscordUtil;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
@@ -30,7 +30,7 @@ import java.util.List;
 public class GiveClanLeaderSelectButtonCommand implements ButtonComponentCommand {
 
     @Autowired
-    private DiscordCoreUtil discordCoreUtil;
+    private DiscordUtil discordUtil;
 
     @Autowired
     private SetupService setupService;
@@ -72,7 +72,7 @@ public class GiveClanLeaderSelectButtonCommand implements ButtonComponentCommand
             String[] mentionedTagArray = message.getContent().split(" ");
 
             if(mentionedTagArray.length>0){
-                long roleId = discordCoreUtil.getIdFromMentionedTag(mentionedTagArray[0]);
+                long roleId = discordUtil.getIdFromMentionedTag(mentionedTagArray[0]);
 
                 if(server.getRoleById(roleId).isPresent()) {
                     Role clanRole = server.getRoleById(roleId).get();
