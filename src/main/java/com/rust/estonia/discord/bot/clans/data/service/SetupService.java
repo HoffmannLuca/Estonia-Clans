@@ -3,13 +3,13 @@ package com.rust.estonia.discord.bot.clans.data.service;
 import com.rust.estonia.discord.bot.clans.data.model.Setup;
 import com.rust.estonia.discord.bot.clans.data.repository.SetupRepository;
 import org.javacord.api.entity.channel.*;
+import org.javacord.api.entity.message.component.SelectMenuOption;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.ApplicationCommandPermissionType;
 import org.javacord.api.interaction.ApplicationCommandPermissions;
-import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,7 +213,7 @@ public class SetupService {
     public boolean addClanRank(Server server, String name){
 
         if(!isClanRank(server, name)) {
-            long newRank = getAllClanRanks(server).size();
+            long newRank = getRankList(server, "clan").size();
             return setClanRank(server, newRank, name.toLowerCase());
         }
         return false;
@@ -261,7 +261,17 @@ public class SetupService {
         return "";
     }
 
-    public ArrayList<String> getAllClanRanks(Server server){
+    public List<SelectMenuOption> getRankSelectOptions(Server server, String rankType){
+
+        List<SelectMenuOption> rankOptions = new ArrayList<>();
+
+        for(String rank : getRankList(server, rankType)){
+            rankOptions.add(SelectMenuOption.create(rank.toUpperCase(), rank));
+        }
+        return rankOptions;
+    }
+
+    public ArrayList<String> getRankList(Server server, String rankType) {
 
         ArrayList<String> allRanks= new ArrayList<>();
         Setup setup = getSetup(server);
@@ -301,7 +311,7 @@ public class SetupService {
 
     public boolean isClanRank(Server server, String name){
 
-        return getAllClanRanks(server).contains(name.toLowerCase());
+        return getRankList(server, "clan").contains(name.toLowerCase());
     }
 
     public boolean belowMaxRanks(Server server){
@@ -365,24 +375,6 @@ public class SetupService {
         }
 
         return false;
-    }
-
-    public List<SlashCommandOptionChoice> getClanRankOptions(Server server){
-        List<SlashCommandOptionChoice> ranks = new ArrayList<>();
-
-        Setup setup = getSetup(server);
-
-        if(setup!=null){
-
-            for (long i = setup.getClanRanks().size()-1; i >= 0; i--) {
-                ranks.add(SlashCommandOptionChoice.create((i+1)+". "+setup.getClanRanks().get(i).toUpperCase(), i));
-            }
-        }
-
-        if(ranks.isEmpty()){
-            ranks.add(SlashCommandOptionChoice.create("(no-rank-available)",-1));
-        }
-        return ranks;
     }
 
     public boolean roleHasUserByRoleTag(Server server, User user, String roleTag){

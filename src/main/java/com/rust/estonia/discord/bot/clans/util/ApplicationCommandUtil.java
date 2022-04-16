@@ -4,7 +4,6 @@ import com.rust.estonia.discord.bot.clans.command.slash.server.ServerSlashComman
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.ServerApplicationCommandPermissionsBuilder;
-import org.javacord.api.interaction.SlashCommandBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,14 +28,5 @@ public class ApplicationCommandUtil {
         }
 
         api.batchUpdateApplicationCommandPermissions(server, serverPermissionBuilder);
-    }
-    public void updateServerSlashCommands(Server server){
-
-        List<SlashCommandBuilder> serverCommandBuilder = new ArrayList<>();
-        for(ServerSlashCommand command : serverSlashCommands){
-            serverCommandBuilder.add(command.getCommandBuilder(server));
-        }
-
-        server.getApi().bulkOverwriteServerApplicationCommands(server, serverCommandBuilder);
     }
 }
