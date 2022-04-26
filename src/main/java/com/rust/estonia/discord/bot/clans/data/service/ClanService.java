@@ -367,11 +367,15 @@ public class ClanService {
                 break;
 
             case 2:
-                clanCategoryTag = CategoryTag.LEGACY_CLAN_CATEGORY;
+                clanCategoryTag = CategoryTag.CONTENDER_CLAN_CATEGORY;
                 break;
 
             case 3:
-                clanCategoryTag = CategoryTag.TOP_CLAN_CATEGORY;
+                clanCategoryTag = CategoryTag.LEGACY_CLAN_CATEGORY;
+                break;
+
+            case 4:
+                clanCategoryTag = CategoryTag.EMINENT_CLAN_CATEGORY;
 
         }
         return clanCategoryTag;
@@ -397,7 +401,7 @@ public class ClanService {
 
         Clan clan = getClanByRole(server, clanRole);
         if(clan!=null){
-            if(clan.getClanRank()<3){
+            if(clan.getClanRank()<4){
                 if(setClanCategory(server, clan, (clan.getClanRank())+1)) {
                     clan.setClanRank(clan.getClanRank() + 1);
                     updateClan(clan);

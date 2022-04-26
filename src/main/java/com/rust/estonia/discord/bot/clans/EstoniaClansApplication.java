@@ -6,6 +6,7 @@ import com.rust.estonia.discord.bot.clans.util.ApplicationCommandUtil;
 import com.rust.estonia.discord.bot.clans.listener.*;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.activity.ActivityType;
 import org.javacord.api.entity.intent.Intent;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.ServerApplicationCommandPermissionsBuilder;
@@ -78,6 +79,7 @@ public class EstoniaClansApplication {
 				.login()
 				.join();
 
+		api.updateActivity(ActivityType.LISTENING, "/info");
 		setSlashCommands(api);
 
 		return api;
